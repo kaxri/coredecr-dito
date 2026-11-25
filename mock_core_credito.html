@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empréstimos Vivo Pay — Jornada de crédito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --roxo:#660099;
+  --roxo-esc:#4B0073;
+  --roxo-card:#461E5F;
+  --roxo-claro:#F4EAFA;
+  --preto:#000000;
+  --cinza:#666666;
+  --trilho:##EAE6F0;
+  --divisor:##EAE6F0;
+  --bg:#F6F6F6;
+  --row-gap:12px;
+  --row-padding:16px 0;
+  --row-label-size:15px;
+  --row-value-size:12px;
+  --row-secondary-size:12px;
+  --row-line-height:1.3;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Vivo Type','VivoType','Vivo Type Regular','Vivo',
+              'Telefonica Sans','Telefónica Sans','Telefonica',
+              'Figtree','Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:#141418;color:#fff;min-height:100vh;
+  display:flex;justify-content:center;padding:26px 16px 60px;
+}
+.wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+
+/* ===== painel ===== */
+.painel{width:306px;flex-shrink:0;position:sticky;top:26px}
+.painel h1{font-size:17px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px}
+.painel .sub{font-size:12.5px;color:#93939D;line-height:1.5;margin-bottom:20px}
+.grupo{margin-bottom:20px}
+.grupo-tit{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#76767F;margin-bottom:9px;font-weight:600}
+.passos{display:flex;flex-direction:column;gap:3px}
+.passo{display:flex;gap:9px;align-items:center;background:#1E1E23;border:1px solid #2A2A30;
+  border-radius:9px;padding:8px 10px;cursor:pointer;font-size:12.5px;color:#C4C4CC;transition:.15s;text-align:left;font-family:inherit}
+.passo:hover{background:#25252B;color:#fff}
+.passo.on{background:var(--roxo);border-color:#7B1FB0;color:#fff;font-weight:500}
+.passo .n{width:19px;height:19px;border-radius:50%;background:#33333A;color:#B4B4BD;font-size:10.5px;
+  display:grid;place-items:center;flex-shrink:0;font-weight:600}
+.passo.on .n{background:rgba(255,255,255,.24);color:#fff}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#1E1E23;
+  border:1px solid #2A2A30;border-radius:9px;padding:10px 11px;font-size:12.5px;color:#C4C4CC;margin-bottom:5px}
+.sw{position:relative;width:38px;height:22px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0}
+.sw i{position:absolute;inset:0;background:#D4D4DA;border-radius:20px;cursor:pointer;transition:.2s}
+.sw i:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked + i{background:var(--roxo)}
+.sw input:checked + i:before{transform:translateX(16px)}
+.nota{font-size:11.5px;color:#8A8A94;line-height:1.55;background:#1B1B1F;border-left:2px solid var(--roxo);
+  padding:9px 11px;border-radius:0 7px 7px 0}
+.nota b{color:#C9A9E0;font-weight:600}
+.prem{font-size:11.5px;color:#93939D;line-height:1.6}
+.prem div{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid #26262B}
+.prem span:last-child{color:#DCDCE2;font-weight:500;text-align:right}
+
+/* ===== device ===== */
+.device{width:393px;flex-shrink:0;background:#000;border-radius:0px;padding:11px;
+  box-shadow:0 26px 70px rgba(0,0,0,.65);position:relative}
+.tela{width:100%;height:852px;background:#fff;border-radius:0px;overflow:hidden;
+  position:relative;display:flex;flex-direction:column;color:var(--preto)}
+.ilha{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:33px;
+  background:#000;border-radius:20px;z-index:60}
+.status{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 30px;
+  font-size:15px;font-weight:600;flex-shrink:0;z-index:50;position:relative;letter-spacing:-.2px}
+.status .dir{display:flex;gap:5px;align-items:center;font-size:11px;opacity:.9}
+.status.roxo{background:var(--roxo);color:#fff}
+.status.escuro{background:#2C0042;color:#fff}
+.corpo{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;background: #fff;}
+.corpo::-webkit-scrollbar{width:0}
+
+.view{display:none;min-height:100%;flex-direction:column}
+.view.on{display:flex}
+
+/* ===== componentes base ===== */
+.voltar{width:34px;height:34px;border:0;background:0;display:grid;place-items:center;cursor:pointer;margin:2px 0 0 14px}
+.voltar svg{width:19px;height:19px}
+.voltar.br{color:#fff}
+
+h2.tit{font-size:16px;line-height:1.28;font-weight:400;letter-spacing:-.6px;padding:0 24px}
+.view[data-v="2"] h2.tit{font-size:24px;padding-right:16px;padding-left:16px}
+.lbl-sec{font-size:12.5px;letter-spacing:.7px;text-transform:uppercase;color:var(--cinza);font-weight:400;padding:0 24px}
+.pad{padding:0 24px}
+
+/* linha padrão Vivo */
+.row{display:flex;align-items:center;justify-content:space-between;gap:var(--row-gap);padding:var(--row-padding);
+  font-family:inherit;font-size:var(--row-label-size);line-height:var(--row-line-height)}
+.row .main{min-width:0}
+.row .k{font-size:var(--row-label-size);font-weight:400;letter-spacing:-.2px;line-height:var(--row-line-height)}
+.row .v{font-size:var(--row-value-size);color:var(--cinza);margin-top:4px;letter-spacing:-.2px;word-break:break-word}
+.row .v small{display:block;font-size:var(--row-secondary-size);margin-top:2px;letter-spacing:-.2px}
+.row .v.forte{color:var(--preto);font-weight:600}
+.row .act{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ico{width:26px;height:26px;border:0;background:0;display:grid;place-items:center;cursor:pointer;flex-shrink:0}
+.ico{color:var(--roxo)}
+.ico.cinza{color:#9A9A9A}
+.ico svg{width:19px;height:19px}
+.hr{height:1px;background:var(--divisor);margin:0}
+
+/* ===== ACCORDION (Cards Expansíveis) ===== */
+.acc-card {
+    border: 1px solid var(--trilho);
+    border-radius: 24px;
+    margin-bottom: 24px;
+    background: #fff;
+    overflow: hidden;
+    transition: 0.2s ease-in-out;
+}
+
+.acc-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 20px;
+    grid-template-rows: auto auto;
+    column-gap: 10px;
+    row-gap: 6px;
+    align-items: center;
+
+    min-height: 88px;
+    padding: 16px;
+
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.acc-topline {
+    display: contents;
+}
+
+.acc-title {
+    grid-column: 1;
+    grid-row: 1;
+
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    color: #1f1f1f;
+}
+
+.acc-value {
+    grid-column: 2;
+    grid-row: 1 / 3;
+
+    align-self: center;
+    justify-self: end;
+    text-align: right;
+    white-space: nowrap;
+
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    color: #5f5879;
+}
+
+.acc-summary {
+    grid-column: 1;
+    grid-row: 2;
+
+    padding: 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--cinza);
+    white-space: nowrap;
+}
+
+.acc-chevron {
+    grid-column: 3;
+    grid-row: 1 / 3;
+
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+
+    width: 20px;
+    height: 20px;
+    margin-left: 2px;
+
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
+
+.acc-chevron svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+.acc-card.expanded .acc-chevron {
+    transform: rotate(180deg);
+}
+
+.acc-body {
+    padding: 0 16px 16px;
+    display: none;
+    border-top: 1px solid var(--divisor);
+    margin-top: 4px;
+    padding-top: 16px;
+}
+
+.acc-card.expanded .acc-body {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== Novos Campos Estilo Outline ===== */
+.box-field {
+  border: 1px solid #D6D6D6;
+  border-radius: 6px;
+  padding: 10px 14px;
+  position: relative;
+  background: #FFFFFF;
+  margin-bottom: 4px;
+}
+.box-field.disabled { background: #F9F9F9; opacity: 0.6; pointer-events: none; }
+.box-lbl { font-size: 12.5px; color: #666666; margin-bottom: 2px; letter-spacing: -0.2px; }
+.box-val { font-size: 15.5px; color: #141418; display: flex; justify-content: space-between; align-items: center; min-height: 24px; letter-spacing: -0.3px; font-weight: 500;}
+.box-val-sub { font-size: 12.5px; color: #666666; margin-top: 2px; font-weight: 400;}
+.box-hint { font-size: 11.5px; color: #8E8E93; margin: 0 0 16px 2px; letter-spacing: -0.1px; }
+.box-hint.alerta { color: var(--roxo); font-weight: 600; }
+
+/* slider */
+.slider{width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:5px;
+  background:var(--trilho);outline:0;margin:6px 0}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:var(--roxo);cursor:grab;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.22)}
+.slider::-moz-range-thumb{width:18px;height:18px;border:3px solid #fff;border-radius:50%;background:var(--roxo);cursor:grab}
+
+/* skeleton loading */
+.skeleton-box {
+  display: inline-block;
+  height: 18px;
+  width: 90px;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: skel 1.5s infinite;
+  border-radius: 4px;
+}
+@keyframes skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.in-total{font-family:inherit;font-size:42px;font-weight:400;color:var(--roxo);letter-spacing:-.5px;
+  line-height:1.05;border:0;border-bottom:2px solid var(--roxo);background:0;outline:0;width:100%;
+  padding:0 0 2px;-moz-appearance:textfield}
+.in-total::-webkit-outer-spin-button,.in-total::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+/* botão */
+.btn{width:100%;border:0;background:var(--roxo);color:#fff;font-family:inherit;font-size:17px;
+  font-weight:600;padding:19px;border-radius:40px;cursor:pointer;transition:.15s;letter-spacing:-.2px}
+.btn:hover{background:var(--roxo-esc)}
+.btn:disabled{background:#D6D6D6;color:#fff;cursor:not-allowed}
+
+/* Botão Flutuante (Fora do App) */
+.voltar-idx {
+  margin-top: 18px;
+  background: #23232C;
+  color: #fff;
+  border: 1px solid #33333C;
+  padding: 14px 26px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.2px;
+}
+.voltar-idx:hover { background: #2E2E38; border-color: var(--roxo); }
+.voltar-idx { color:#fff }
+.voltar-idx svg { width: 18px; height: 18px; }
+
+/* rodapé fixo com termos */
+.rodape{background:#fff;border-top:0;padding:18px 24px 24px;flex-shrink:0;
+  position:sticky;bottom:0;z-index:20; box-shadow: 0 -4px 16px rgba(0,0,0,0.03);}
+.termos{font-size:14.5px;line-height:1.45;margin-bottom:16px;letter-spacing:-.1px}
+.termos a{color:var(--roxo);text-decoration:none}
+
+/* tabbar */
+.tabbar{display:flex;justify-content:space-around;background:#fff;padding:9px 0 14px;
+  border-top:0;flex-shrink:0}
+.tb{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:#6E6E6E;position:relative}
+.tb svg{width:23px;height:23px}
+.tb.at{color:var(--roxo);font-weight:500}
+.tb .cir{width:26px;height:26px;border-radius:50%;background:var(--roxo);display:grid;place-items:center;
+  color:#fff;font-size:14px;font-weight:700}
+
+/* ===== views ===== */
+.home{background:var(--roxo);color:#fff;padding:0 0 32px;flex-shrink:0}
+.home-top{display:flex;align-items:center;justify-content:space-between;padding:4px 22px 0}
+.av{width:36px;height:36px;border-radius:50%;background:#D2D2D6;position:relative;display:grid;place-items:center}
+.av svg{width:21px;height:21px;fill:#8E8E93}
+.av .bd{position:absolute;top:-3px;left:-6px;background:#E4002B;color:#fff;font-size:10px;font-weight:600;
+  border-radius:20px;padding:1px 6px;border:2px solid var(--roxo)}
+.home .marca{display:flex;align-items:center;justify-content:space-between;padding:110px 22px 0}
+.home .marca b{font-size:25px;font-weight:400;letter-spacing:-.3px;display:flex;align-items:center;gap:9px}
+.home .marca b svg{width:22px;height:26px;fill:#fff}
+.pills{display:flex;gap:11px;padding:48px 0 0 22px;overflow-x:auto}
+.pills::-webkit-scrollbar{height:0}
+.pill{border:1.4px solid rgba(255,255,255,.7);background:0;color:#fff;font-family:inherit;font-size:16px;
+  padding:12px 22px;border-radius:30px;white-space:nowrap;cursor:pointer;font-weight:400}
+.saldo{padding:44px 22px 0;display:flex;align-items:flex-start;justify-content:space-between}
+.saldo b{font-size:38px;font-weight:400;letter-spacing:-1px;display:block;line-height:1.1}
+.saldo span{font-size:16px;opacity:.9;display:block;margin-top:4px;font-weight:400}
+.cards{display:flex;gap:11px;padding:58px 0 0 22px;overflow:hidden}
+.cd{flex:0 0 186px;width:186px;border-radius:16px;padding:18px 16px;min-height:158px;display:flex;flex-direction:column;justify-content:space-between}
+.cd.out{border:1.4px solid rgba(255,255,255,.5)}
+.cd.fill{background:var(--roxo-card)}
+.cd b{font-size:16.5px;font-weight:400;display:block}
+.cd span{font-size:14px;opacity:.92;line-height:1.35;display:block;font-weight:400}
+.cd .ic{width:26px;height:26px}
+.cd .ic{color:#fff}
+.cd .ic svg{width:26px;height:26px}
+.novid{background:var(--bg);flex:1;padding:26px 22px 0}
+.novid h4{font-size:21px;font-weight:400;letter-spacing:-.3px;margin-bottom:14px}
+.novid .banner{display:block;width:100%;height:auto;border-radius:22px}
+
+/* ===== 0. ÍNDICE / FLUXO ALTERNATIVO ===== */
+.idx{flex:1;display:flex;flex-direction:column;background:#fff;padding:18px 22px 26px;overflow-y:auto}
+.idx h2{font-size:16px;font-weight:400;letter-spacing:-.5px;line-height:1.2}
+.idx .sb{font-size:13.5px;color:var(--cinza);line-height:1.45;margin:8px 0 24px}
+.idx .lb{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:#9A9AA2;font-weight:600;margin:24px 0 10px}
+.idx .lb:first-of-type{margin-top:0}
+.psl{display:flex;flex-direction:column;gap:6px}
+.pss{display:flex;gap:11px;align-items:center;background:var(--bg);border:0;border-radius:12px;
+  padding:12px 14px;font-family:inherit;font-size:12px;color:var(--preto);text-align:left;cursor:pointer;
+  letter-spacing:-.2px;transition:.15s;width:100%}
+.pss:hover{background:var(--roxo-claro);color:var(--roxo)}
+.pss .n{width:22px;height:22px;border-radius:50%;background:#fff;color:var(--roxo);font-size:11.5px;
+  font-weight:600;display:grid;place-items:center;flex-shrink:0}
+.optl{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);
+  border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:6px;letter-spacing:-.2px}
+.prem2{font-size:12px;color:var(--cinza);line-height:1.6;background:var(--bg);border-radius:12px;padding:10px 14px}
+.prem2 div{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid #E6E6E6}
+.prem2 div:last-child{border:0}
+.prem2 span:last-child{color:var(--preto);font-weight:500;text-align:right}
+
+.hero{height:196px;background:linear-gradient(160deg,#2C0042,var(--roxo) 62%,#8121B8);position:relative;overflow:hidden;flex-shrink:0}
+.hero .c1,.hero .c2{position:absolute;border:1.5px solid rgba(255,255,255,.25);border-radius:50%}
+.hero .c1{width:250px;height:250px;right:-80px;top:-70px}
+.hero .c2{width:150px;height:150px;left:-50px;bottom:-55px}
+.hero .voltar{position:absolute;top:8px;left:0;z-index:5;background:rgba(255,255,255,.22);border-radius:50%;width:38px;height:38px;margin-left:16px}
+.benef{padding:6px 24px 0}
+.bf{display:flex;gap:15px;align-items:center;padding:16px 0}
+.bf .ic{width:30px;height:30px;flex-shrink:0;display:grid;place-items:center}
+.bf .ic{color:var(--roxo)}
+.bf .ic svg{width:23px;height:23px}
+.bf span{font-size:15.5px;letter-spacing:-.2px;line-height:1.3}
+.legacy-benef{display:none}
+.credit-options{padding:40px 16px 0}
+.credit-options-title{font-size:12px;line-height:1.4;letter-spacing:.2px;color:#665D7A;font-weight:500;margin:0 0 16px}
+.credit-options-list{border:1px solid #EAE6F0;border-radius:26px;overflow:hidden}
+.credit-option{width:100%;height:72px;min-height:72px;display:grid;grid-template-columns:32px minmax(0,1fr) 20px;align-items:center;
+  column-gap:16px;padding:8px 16px;border:0;background:#fff;color:#0E0C14;text-align:left;font:inherit;cursor:pointer}
+.credit-option:not(:first-child){position:relative}
+.credit-option:not(:first-child):after{content:"";position:absolute;top:0;left:64px;right:16px;height:1px;background:#EAE6F0}
+.credit-option-icon{width:32px;height:32px;border-radius:10px;background:#F3F0F7;display:grid;place-items:center;color:#0E0C14}
+.credit-option-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.credit-option:nth-child(2) .credit-option-icon svg{width:20px;height:20px}
+.credit-option-copy{min-width:0}
+.credit-option-title{display:block;font-size:14px;font-weight:400;line-height:1.3;letter-spacing:-.2px}
+.credit-option-description{display:block;margin-top:4px;font-size:12px;font-weight:400;line-height:1.35;color:#665D7A}
+.credit-option-chevron{width:20px;height:20px;color:#B9AFCC}
+.credit-option-chevron svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.credit-option:focus-visible,.insurance-callout-link:focus-visible{outline:2px solid var(--roxo);outline-offset:-3px}
+.insurance-callout{height:fit-content;margin:18px 16px 16px;padding:16px 16px 16px;border-radius:24px;background:#F3F0F7;display:grid;
+  grid-template-columns:24px minmax(0,1fr);column-gap:16px;row-gap:16px;color:#665C78}
+.insurance-callout-icon{width:24px;height:24px;color:#0E0C14}
+.insurance-callout-icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.insurance-callout-copy{font-size:14px;font-weight:400;line-height:1.45;letter-spacing:-.1px;color:#665D7A}
+.insurance-callout-link{grid-column:2;justify-self:start;display:inline-flex;align-items:center;gap:4px;padding:0;border:0;
+  background:none;color:var(--roxo);font-family:inherit;font-size:14px;font-weight:400;line-height:1.4;text-align:left;cursor:pointer}
+.insurance-callout-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.credit-sheet-content{padding:24px 0 32px}
+.credit-sheet-content p{font-size:14px;line-height:1.5;color:var(--cinza);margin:0 0 20px}
+.credit-sheet-note{padding:14px;border-radius:12px;background:#F4EAFA;font-size:12px;line-height:1.45;color:#4B0073}
+.credit-sheet-action{padding:20px 0 0}
+.credit-sheet-action .btn{width:100%}
+.sheet-bg.credit-info-sheet .sheet{height:auto;max-height:calc(100% - env(safe-area-inset-top,0px));border-radius:26px 26px 0 0}
+#sheet.credit-info-sheet #sheet-body{flex:0 1 auto;height:auto;min-height:auto;padding:0 16px 16px}
+.credit-info-content{width:100%;align-self:stretch;padding:40px 0 24px}
+.credit-info-content h2{font-size:16px;font-weight:500;line-height:1.35;margin:0 0 0;color:#0E0C14}
+.credit-info-row{min-height:72px;display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid #EAE6F0}
+.credit-info-row:last-child{border-bottom:0}
+.credit-info-row strong{font-size:14px;line-height:1.35;font-weight:400;color:#0E0C14}
+.credit-info-row span{font-size:12px;line-height:1.35;color:#796D83}
+.insurance-global{height:auto;min-height:72px;margin:0 16px 16px;padding:12px 16px;border:1px solid #EAE6F0;border-radius:24px;
+  display:grid;grid-template-columns:32px minmax(0,1fr) 20px;align-items:center;gap:12px;background:#fff}
+.insurance-global-icon{width:32px;height:32px;border-radius:10px;background:#F3F0F7;display:grid;place-items:center;color:#0E0C14}
+.insurance-global-icon svg{width:20px;height:20px;fill:currentColor}
+.insurance-global-icon svg path{fill:currentColor!important;stroke:none!important}
+.insurance-global-copy{min-width:0}
+.insurance-global-title{display:block;font-size:14px;line-height:1.3;font-weight:400;color:#0E0C14}
+.insurance-global-link{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:0;border:0;background:none;color:var(--roxo);
+  font-family:inherit;font-size:14px;font-weight:400;line-height:1.35;text-align:left;cursor:pointer}
+.insurance-global-link svg{width:20px;height:20px;fill:none!important;stroke:currentColor!important;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.insurance-global-check{width:20px;height:20px;position:relative;cursor:pointer}
+.insurance-global-check input{position:absolute;opacity:0;width:0;height:0}
+.insurance-global-check i{position:absolute;inset:0;border:1px solid #8E8794;border-radius:5px;background:#fff;color:transparent;font-style:normal;font-size:14px;line-height:18px;text-align:center}
+.insurance-global-check input:checked+i{border-color:var(--roxo);background:var(--roxo);color:#fff}
+.credit-info-content~.credit-sheet-note,.credit-info-content~.credit-sheet-action{display:none}
+
+.proc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:0 40px}
+.aster{width:64px;height:64px;position:relative;animation:gira 1.1s linear infinite}
+.aster i{position:absolute;left:50%;top:50%;width:7px;height:23px;border-radius:5px;background:var(--roxo);
+  transform-origin:50% 0;margin-left:-3.5px}
+@keyframes gira{to{transform:rotate(360deg)}}
+.proc p{font-size:19px;font-weight:500;letter-spacing:-.3px;text-align:center}
+.proc .et{font-size:13.5px;color:var(--cinza);text-align:center;height:18px;transition:.25s}
+
+.valor{font-size:42px;font-weight:400;color:var(--roxo);letter-spacing:-.5px;line-height:1.05;cursor:text}
+.faixa{font-size:15px;color:var(--cinza);margin-top:10px;letter-spacing:-.2px}
+.edit-in{width:160px;text-align:left;border:0;border-bottom:2px solid var(--roxo);background:0;
+  font-family:inherit;font-size:15px;font-weight:600;color:var(--roxo);outline:0;padding:3px 0;margin-top:3px}
+.selc{border:1.4px solid var(--trilho);border-radius:10px;padding:8px 8px 8px 11px;font-family:inherit;
+  font-size:15px;font-weight:400;letter-spacing:-.3px;color:var(--preto);outline:0;background:#fff;cursor:pointer}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1.4px solid var(--trilho);border-radius:30px;
+  padding:9px 15px;font-size:14px;cursor:pointer;background:#fff;font-family:inherit;transition:.15s}
+.chip.btn-tab{justify-content:center; flex:1; color:var(--cinza); font-weight:400;}
+.chip.btn-tab.on{border-color:var(--roxo); color:var(--roxo); font-weight:600; background:var(--roxo-claro);}
+.bloco{background:transparent;border-radius:0;padding:0;margin-bottom:0}
+.bloco > .row:first-child{padding-top:6px}
+.aviso{margin:0 24px 16px;background:#FFF6E5;border:1px solid #F0DFB6;border-radius:12px;padding:14px;
+  font-size:13.5px;color:#6B4A00;line-height:1.45;display:flex;gap:11px}
+.aviso b{display:block;margin-bottom:3px}
+.tg{position:relative;width:46px;height:27px;flex-shrink:0}
+.tg input{opacity:0;width:0;height:0}
+.tg i{position:absolute;inset:0;background:#D6D6DA;border-radius:20px;cursor:pointer;transition:.2s}
+.tg i:before{content:'';position:absolute;width:21px;height:21px;left:3px;top:3px;background:#fff;
+  border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.28)}
+.tg input:checked + i{background:var(--roxo)}
+.tg input:checked + i:before{transform:translateX(19px)}
+
+/* ===== sheet ===== */
+.sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;z-index:70}
+.sheet-bg.on{display:flex}
+.sheet{background:#fff;width:100%;border-radius:22px 22px 0 0;max-height:86%;overflow-y:auto;
+  animation:sobe .3s cubic-bezier(.2,.8,.3,1);padding-bottom:20px}
+.sheet::-webkit-scrollbar{width:0}
+@keyframes sobe{from{transform:translateY(100%)}}
+.sheet-hd{display:flex;align-items:center;justify-content:center;position:relative;padding:22px 24px 6px}
+.sheet-hd b{font-size:19px;font-weight:500;letter-spacing:-.3px}
+.sheet-hd button{position:absolute;right:20px;top:18px;background:0;border:0;cursor:pointer;padding:4px}
+.sheet-hd svg{width:21px;height:21px}
+
+/* ===== 8. senha ===== */
+.senha{flex:1;display:flex;flex-direction:column;padding:0 24px}
+.dots{display:flex;gap:18px;justify-content:center;margin:40px 0 0}
+.dot{width:17px;height:17px;border-radius:50%;border:1.8px solid var(--trilho);transition:.18s}
+.dot.full{background:var(--roxo);border-color:var(--roxo);transform:scale(1.05)}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 30px;padding:0 6px;margin-top:auto}
+.kp button{background:0;border:0;font-family:inherit;font-size:29px;font-weight:400;color:var(--preto);
+  padding:14px 0;border-radius:50%;cursor:pointer;transition:.12s;letter-spacing:-.5px}
+.kp button:hover{background:var(--bg)}
+.kp button.vaz{cursor:default}
+.kp button.vaz:hover{background:0}
+.kp svg{width:27px;height:27px}
+
+/* ===== 9. sucesso ===== */
+.ok{background:var(--roxo);color:#fff;flex:1;display:flex;flex-direction:column;padding:30px 24px 24px}
+.ok-ic{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;margin-bottom:26px}
+.ok-ic{color:#fff}
+.ok-ic svg{width:29px;height:29px}
+.ok h2{font-size:16px;font-weight:400;line-height:1.24;letter-spacing:-.7px;margin-bottom:30px}
+.ok-l{display:flex;justify-content:space-between;gap:var(--row-gap);padding:var(--row-padding);border-bottom:1px solid rgba(255,255,255,.2);font-size:var(--row-label-size);line-height:var(--row-line-height)}
+.ok-l .k{opacity:.78}
+.ok-l .v{color:inherit;font-weight:600;text-align:right}
+.ok-l .v small{display:block;font-weight:400;opacity:.78;font-size:var(--row-secondary-size);margin-top:3px;word-break:break-word;}
+.btn-br{background:#fff;color:var(--roxo);width:100%;border:0;border-radius:40px;padding:19px;
+  font-size:17px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:22px}
+.btn-gh{background:0;border:0;color:#fff;width:100%;padding:16px;font-size:16px;font-weight:500;
+  font-family:inherit;cursor:pointer;opacity:.95}
+
+/* ===== referência visual Figma: jornada mobile Vivo Pay ===== */
+:root{
+  --roxo:#660099;
+  --roxo-esc:#4B0073;
+  --roxo-card:#461E5F;
+  --roxo-claro:#F3EEF7;
+  --cinza:#6C5B7B;
+  --trilho:#E7E2EB;
+  --divisor:#EAE5EF;
+}
+body{background:#000;padding:24px 16px 36px;overflow-x:hidden}
+.wrap{gap:10px}
+.device{width:440px;border-radius:46px;padding:0;background:#000;box-shadow:none}
+.tela{height:min(900px,calc(100dvh - 60px));border-radius:0;transform:translateZ(0)}
+.ilha{display:none}
+.status{display:none}
+.status.roxo{display:none}
+.corpo{background:#fff}
+.view{min-height:100%;flex-shrink:0}
+.voltar{width:40px;height:40px;background:#F5F3F7;border-radius:50%;margin:8px 0 0 16px}
+.voltar svg{width:20px;height:20px}
+h2.tit{font-size:16px;line-height:1.25;font-weight:500;letter-spacing:-.35px}
+.rodape{padding:16px 20px 22px;box-shadow:0 -2px 10px rgba(25,15,35,.06)}
+.btn,.btn-br{font-size:15px;font-weight:500;padding:15px 18px}
+.termos{font-size:12px}
+.hero{height:252px;background:url("./hero-protecao.png") center/cover no-repeat}
+.hero .voltar{position:fixed;top:8px;left:16px;z-index:60;margin:0}
+.hero .c1{width:310px;height:310px;right:-120px;top:-95px;border-color:rgba(255,255,255,.16)}
+.hero .c2{width:170px;height:170px;left:-50px;bottom:-75px;border-color:rgba(190,71,255,.75)}
+.hero .voltar{background:rgba(255,255,255,.8)}
+.benef{padding:8px 24px 0}
+.bf{padding:17px 0}
+.bf .ic{width:32px;height:32px;border-radius:11px;background:var(--roxo-claro)}
+.bf .ic svg{width:20px;height:20px}
+.bf span{font-size:14px}
+.benef .hr{margin-left:36px}
+.home{padding:0 0 24px}
+.home-top{padding:8px 24px 0}
+.home-top>svg{background:rgba(255,255,255,.15);padding:8px;border-radius:50%;width:40px!important;height:40px!important}
+.home .marca{display:block;padding:42px 24px 0}
+.home .marca b{display:block;font-size:24px;line-height:1.22;max-width:290px}
+.home .marca span{display:block;color:rgba(255,255,255,.8);font-size:14px;margin-top:10px}
+.home-actions{display:flex;align-items:center;gap:18px;padding:22px 24px 0}
+.home-actions .primary,.home-actions .secondary{font-family:inherit;font-size:12px;font-weight:500}
+.home-actions .primary{border:0;border-radius:30px;background:#fff;color:var(--roxo);padding:11px 17px}
+.home-actions .secondary{border:0;background:none;color:#fff;padding:8px 0}
+.home-servicos{background:#F6F6F6;padding:26px 16px 22px}
+.home-servicos h4{font-size:16px;font-weight:500;margin:0 8px 16px}
+.home-servicos .cards{padding:0;overflow-x:auto;gap:8px}
+.home-servicos .cards{scrollbar-width:none}
+.home-servicos .cards::-webkit-scrollbar{display:none}
+.home-servicos .cd{flex-basis:130px;width:130px;min-height:130px;border-radius:20px;padding:16px;background:#fff;color:#111}
+.home-servicos .cd.out,.home-servicos .cd.fill{border:0;background:#fff}
+.home-servicos .cd b{font-size:14px;font-weight:500}
+.home-servicos .cd span{font-size:11.5px;color:#666}
+.home-servicos .cd .ic{width:32px;height:32px;border-radius:12px;background:#F6F6F6;display:grid;place-items:center}
+.home-servicos .cd .ic svg{width:19px;height:19px}
+.novid{background:#F6F6F6;padding:18px 22px 24px}
+.novid h4{font-size:16px;font-weight:500}
+.novid .banner{display:block;width:100%;height:auto;border-radius:22px}
+.tabbar{padding:9px 4px 14px;border-radius:28px;margin:0 10px 10px;box-shadow:0 2px 14px #0002}
+.tb{font-size:9px}
+.tb svg{width:20px;height:20px}
+.idx{padding:18px 22px 26px}
+.acc-card{border-color:#E5DFEA;border-radius:20px;margin-bottom:9px}
+.acc-card.expanded{border-color:#E5DFEA;box-shadow:none}
+.acc-card.off{background:#fff;border-color:#E5DFEA;opacity:1}
+.acc-card.off .acc-title{color:#17131a}
+.acc-card.off.expanded .acc-summary{display:none}
+.acc-card.off.expanded .acc-header{padding-bottom:12px}
+.simulation-nav{position:sticky;top:0;z-index:30;display:flex;align-items:center;flex:none;height:64px;background:linear-gradient(to bottom,rgba(255,255,255,.4),rgba(255,255,255,0));isolation:isolate}
+.simulation-nav:before{content:"";position:absolute;inset:0;z-index:-1;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);mask-image:linear-gradient(to bottom,#000 0%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,#000 0%,transparent 100%);pointer-events:none}
+.simulation-nav .voltar{width:44px;height:44px;margin:0 0 0 16px;background:rgba(255,255,255,.94);box-shadow:0 4px 18px rgba(0,0,0,.16)}
+.simulation-nav .voltar svg{width:24px;height:24px}
+.view[data-v="5"]>.tit{margin-bottom:8px;padding-right:16px;padding-left:16px}
+.view[data-v="5"]>.sim-amount,
+.view[data-v="5"]>.sim-label,
+.view[data-v="5"]>#produtos,
+.view[data-v="5"]>.sim-info{margin-right:16px;margin-left:16px}
+.view[data-v="5"]>.rodape{padding-right:16px;padding-left:16px}
+.view[data-v="5"]>.sim-amount,
+.view[data-v="5"]>.sim-label{padding-right:0;padding-left:0}
+.view[data-v="5"]>#produtos{padding-right:0;padding-left:0}
+.view[data-v="5"]>.sim-info{margin-right:16px;margin-left:16px}
+.product-row.is-off .product-copy{color:#8E8794}
+.product-row.is-off .product-copy small{color:#CFA6E6}
+.product-row.is-off .product-icon{background:#F7F5F9}
+.product-row.is-off .product-action{cursor:default;pointer-events:none}
+.product-row.is-off .check-safe{cursor:default;pointer-events:none}
+.product-row.is-off .check-safe i{background:#EDE6F2}
+.product-row.is-off .check-safe input:checked+i{background:#C08AE0}
+.acc-header{height:72px;min-height:72px;padding:0 16px;align-content:center}
+.acc-header{padding-right:16px}
+.acc-header{grid-template-columns:38px minmax(0,1fr) max-content 20px;grid-template-rows:auto;column-gap:12px;row-gap:0}
+.acc-header-icon{grid-column:1;grid-row:1;width:32px;height:32px;border-radius:10px;background:#F3F0F7;display:grid;place-items:center;color:#0E0C14}
+.acc-header-icon svg{width:20px;height:20px}
+.acc-header-copy{grid-column:2;grid-row:1;min-width:0;display:flex;flex-direction:column}
+.acc-title{display:block;font-size:14px;font-weight:400;color:#17131a}
+.acc-summary{display:block;font-size:12px;font-weight:400;color:#665D7A;margin-top:4px;padding-right:0;white-space:normal}
+.acc-value{grid-column:3;grid-row:1;align-self:center;justify-self:end;display:block;font-size:12px;color:#796D83;white-space:nowrap;text-align:right;line-height:1.35}
+.acc-chevron{top:50%;right:16px}
+.acc-chevron{grid-column:3;grid-row:1 / 3;margin-left:0}
+.acc-header .acc-chevron{grid-column:4;grid-row:1}
+.acc-card.expanded .acc-header{padding-bottom:0}
+.acc-card.expanded .acc-chevron{transform:rotate(180deg)}
+.product-row{display:grid;grid-template-columns:minmax(0,1fr) auto 30px;align-items:center;gap:var(--row-gap);height:72px;padding:0;border-bottom:0;position:relative}
+.product-row:after{content:"";position:absolute;right:0;bottom:0;left:0;border-bottom:1px solid var(--divisor);pointer-events:none}
+.product-row .product-icon{display:none}
+.product-row.company-row .product-value{grid-column:2 / 4}
+.product-row.company-row>span{display:none}
+.product-row:last-child{border-bottom:0}
+.acc-body>.product-row:last-child:after{display:none}
+.product-icon{width:34px;height:34px;border-radius:12px;background:var(--roxo-claro);display:grid;place-items:center}
+.product-icon svg{width:19px;height:19px}
+.product-copy{min-width:0;font-size:var(--row-label-size);line-height:var(--row-line-height)}
+.product-copy small{display:block;color:#665D7A;font-size:var(--row-secondary-size);font-weight:400;line-height:1.35;margin-top:4px}
+.product-copy .insurance-link{border:0;background:transparent;padding:0;color:var(--roxo);font:inherit;font-size:14px;cursor:pointer}
+.product-info-row .product-copy{grid-column:1 / -1;color:#0E0C14;width:100%}
+.product-info-row button{width:100%;display:flex;align-items:center;justify-content:space-between;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.product-info-row button svg{display:block;width:16px;height:16px;flex:none}
+.product-info-row button svg path{fill:#666666}
+.product-value{font-size:var(--row-value-size);color:var(--cinza);white-space:nowrap;text-align:right;justify-self:end}
+.product-action{border:0;background:transparent;padding:5px;display:grid;place-items:center;cursor:pointer}
+.product-action svg{width:20px;height:20px}
+.check-safe{width:20px;height:20px;position:relative;flex:none;cursor:pointer}
+.product-row .check-safe,.product-row .tg{grid-column:4;justify-self:end}
+.check-safe input{position:absolute;opacity:0;width:0;height:0}
+.check-safe i{position:absolute;inset:0;border-radius:5px;background:#D9D3DF;color:#fff;font-style:normal;font-size:14px;line-height:20px;text-align:center}
+.check-safe input:checked+i{background:var(--roxo)}
+.combo-row{height:72px;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:var(--row-gap);padding:0 16px;border-top:1px solid var(--divisor);font-size:var(--row-label-size);line-height:var(--row-line-height)}
+.combo-row .tg{width:46px;height:27px}
+.combo-row .tg i:before{width:21px;height:21px}
+.combo-row .tg input:checked+i:before{transform:translateX(19px)}
+.acc-body{width:100%;padding:0 16px;border-top:1px solid var(--divisor);margin-top:0}
+.box-field{border:0;border-radius:0;border-bottom:1px solid var(--divisor);padding:12px 0;margin:0;min-height:62px}
+.box-lbl{font-size:12px;color:#17131a;margin-bottom:5px}
+.box-val{font-size:12px;color:var(--cinza)}
+.box-val-sub{font-size:11px;color:var(--cinza)}
+.box-hint{font-size:11px;margin:5px 0 10px}
+.field-hit{position:absolute;inset:0;border:0;background:transparent;width:100%;cursor:pointer}
+.acc-body .box-field{position:relative}
+.acc-body .box-field .box-val{padding-right:8px}
+.acc-header .tg{width:42px;height:24px}
+.acc-header .tg i:before{width:18px;height:18px}
+.acc-header .tg input:checked+i:before{transform:translateX(18px)}
+.sim-info{display:flex;gap:12px;align-items:flex-start;margin:18px 24px 40px;background:var(--roxo-claro);border-radius:20px;padding:16px;color:#665D7A;font-size:12px;line-height:1.4}
+.sim-info svg{width:23px;height:23px;flex:none;margin-top:1px}
+.view[data-v="5"]>.rodape{padding-top:12px}
+.view[data-v="5"]{position:relative;padding-bottom:126px}
+.view[data-v="5"]>.rodape{position:fixed;left:0;bottom:0;width:100%;transform:none;
+  z-index:30;border-radius:0;box-shadow:0 -6px 24px rgba(25,15,35,.12);padding-bottom:22px}
+.sim-snack{display:none;align-items:center;justify-content:space-between;gap:12px;position:absolute;left:24px;right:24px;bottom:calc(100% + 12px);background:#2E0047;color:#fff;border-radius:22px;padding:15px 16px;font-size:12px}
+.sim-snack.on{display:flex}
+.sim-snack button{border:0;background:transparent;color:#fff;font-family:inherit;font-size:12px;cursor:pointer;padding:0}
+.sim-amount{padding:8px 16px 0}
+.sim-amount .caption{font-size:12px;color:var(--cinza)}
+.sim-amount .total{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:0;font-family:inherit;font-size:29px;color:var(--roxo);font-weight:500;margin-top:4px;text-align:left;cursor:pointer}
+.sim-amount .total{color:var(--roxo)}
+.sim-amount .total svg{width:18px;height:18px}
+.sim-label{padding:20px 24px 8px;font-size:10px;letter-spacing:.45px;color:var(--cinza)}
+.sim-footer-link{display:inline-flex;align-items:center;gap:4px;color:var(--roxo);font-size:12px;text-decoration:none;margin-bottom:14px}
+.sim-footer-values{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sim-footer-values .caption{font-size:11px;color:var(--cinza)}
+.sim-footer-values .value{font-size:19px;font-weight:500;margin-top:3px}
+.sim-footer-values .value.recebe{font-size:14px;color:var(--roxo);text-align:right}
+.sim-footer-values .btn{width:auto;flex:none;padding:12px 25px;font-size:14px}
+.summary-list{padding:0 4px}
+.summary-section-title{font-size:10px;letter-spacing:.15px;color:var(--cinza);font-weight:400;margin:20px 0 16px}
+.summary-row.no-chevron{grid-template-columns:minmax(0,1fr) auto;cursor:default}
+.summary-row.total-row .name{font-weight:400}
+.summary-row.total-row{border-bottom:1px solid var(--divisor)}
+.summary-row.total-row.receipt-row{border-bottom:0}
+.summary-list>.summary-row.total-row:last-child{border-bottom:0}
+.summary-row.pay-row{grid-template-columns:minmax(0,1fr) auto 18px}
+.summary-row.pay-row:last-child{border-bottom:0}
+.summary-row.pay-row .sub{margin-top:3px}
+.summary-row.receipt-row{border-bottom:0}
+.summary-row{display:grid;grid-template-columns:minmax(0,1fr) auto 18px;gap:var(--row-gap);align-items:center;min-height:72px;padding:var(--row-padding);border-bottom:1px solid var(--divisor);background:transparent;border-left:0;border-right:0;border-top:0;width:100%;font-family:inherit;font-size:var(--row-label-size);line-height:var(--row-line-height);text-align:left;color:var(--preto);cursor:pointer}
+.summary-row.static{grid-template-columns:minmax(0,1fr) auto;cursor:default}
+.summary-row .name{display:block;font-size:var(--row-label-size);line-height:var(--row-line-height);color:#000}
+.summary-row .sub{display:block;font-size:var(--row-secondary-size);color:var(--cinza);line-height:1.35;margin-top:3px}
+.summary-row .amount{font-size:var(--row-value-size);color:var(--cinza);white-space:nowrap;text-align:right}
+.summary-row{color:#796D83}
+.summary-row svg{width:17px;height:17px}
+.summary-insurance-row{grid-template-columns:minmax(0,1fr) 20px;border-bottom:0;cursor:pointer}
+.summary-insurance-check{width:20px;height:20px;position:relative}
+.summary-insurance-check input{position:absolute;inset:0;width:20px;height:20px;margin:0;opacity:0;cursor:pointer}
+.summary-insurance-check i{position:absolute;inset:0;border:1px solid #8E8794;border-radius:5px;background:#fff;color:#fff;
+  font-style:normal;font-size:14px;line-height:18px;text-align:center;pointer-events:none}
+.summary-insurance-check input:checked+i{border-color:var(--roxo);background:var(--roxo)}
+.summary-insurance-check input:checked+i:before{content:"✓"}
+.summary-insurance-check input:focus-visible+i{outline:2px solid var(--roxo);outline-offset:2px}
+.summary-installments-link{padding-top:16px}
+#box-recebimento .summary-section-title{margin-top:0}
+.summary-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.summary-foot .caption{font-size:11px;color:var(--cinza)}
+.summary-foot .value{font-size:20px;font-weight:500;margin-top:3px}
+.summary-foot .btn{width:auto;flex:none;padding:12px 17px;font-size:12px}
+.detail-sheet .sheet-hd b{display:none}
+.detail-sheet .sheet-hd{justify-content:flex-end}
+.detail-sheet .sheet{height:calc(100% - env(safe-area-inset-top,0px));max-height:none}
+.sheet-detail{padding:50px 0 6px}
+.sheet-detail h3{font-size:16px;font-weight:500;margin:0 0 16px}
+.sheet-detail-row{display:flex;align-items:center;justify-content:space-between;gap:var(--row-gap);height:72px;padding:0;border-bottom:1px solid var(--divisor);font-size:var(--row-label-size);line-height:var(--row-line-height)}
+.sheet-detail-row.no-line{border-bottom:0}
+.sheet-detail-row .left small{display:block;font-size:var(--row-secondary-size);color:var(--cinza);margin-top:4px}
+.sheet-detail-row .right{font-size:var(--row-value-size);color:var(--cinza);white-space:nowrap;text-align:right}
+.sheet-detail-section{font-size:11px;color:var(--cinza);margin:44px 0 24px}
+.sheet-bg{background:rgba(10,7,13,.56)}
+.sheet{display:flex;flex-direction:column;border-radius:26px 26px 0 0;max-height:calc(100% - env(safe-area-inset-top,0px));overflow:hidden;padding-bottom:0}
+.sheet-hd{min-height:58px;border-bottom:1px solid var(--divisor);padding:18px 54px 12px}
+.sheet-hd{flex:none}
+.sheet-hd:before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:24px;height:4px;border-radius:9px;background:#C6B9D2}
+.sheet-hd b{font-size:15px;font-weight:500;text-align:center}
+.sheet-hd button{right:14px;top:10px;width:36px;height:36px;border-radius:50%;background:var(--roxo-claro)}
+.sheet-hd svg{width:24px;height:24px}
+
+/* Filled icon treatment */
+.tela svg{fill:currentColor!important;stroke:none!important}
+.tela .credit-option-icon svg{fill:currentColor!important;stroke:none!important}
+.tela .credit-option-chevron svg,.tela .insurance-callout-icon svg,.tela .insurance-callout-link svg{
+  fill:none!important;stroke:currentColor!important
+}
+.voltar{color:var(--preto)}
+.voltar.br{color:#fff}
+.ico{color:var(--roxo)}
+.ico.cinza{color:#9A9A9A}
+.acc-chevron{color:var(--cinza)}
+.av{color:#8E8E93}
+.home-top>svg,.cd .ic{color:#fff}
+.home-servicos .cd .ic{color:#27212c}
+.bf .ic{color:var(--roxo)}
+.sheet-hd{color:var(--preto)}
+.kp{color:var(--preto)}
+.ok-ic{color:#fff}
+.product-icon{color:#1E1822}
+.product-row.is-off .product-icon{color:#8E8794}
+.product-action{color:#B168D3}
+.product-row.is-off .product-action{color:#CFA6E6}
+.sim-info{color:#665D7A}
+.sim-amount .total{color:var(--roxo)}
+.summary-row{color:#796D83}
+.tb{color:#6E6E6E}
+.sheet-amount{padding:42px 0 18px}
+.sheet-amount label{display:block;font-size:12px;color:var(--roxo);margin-bottom:10px}
+.sheet-amount input{width:100%;border:0;border-bottom:1px solid var(--roxo);font-family:inherit;font-size:28px;font-weight:400;color:#17131a;padding:0 0 8px;outline:0}
+.sheet-amount small{display:block;color:var(--cinza);font-size:11px;margin-top:10px}
+.sheet-action{padding:24px 0 18px}
+.sheet-action .btn{padding:14px}
+.installment-list{padding:18px 18px 10px}
+.installment-option{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 2px;border:0;border-bottom:1px solid var(--divisor);background:#fff;text-align:left;font-family:inherit;font-size:14px;font-weight:400;color:#17131a;cursor:pointer}
+.installment-option:last-child{border-bottom:0}
+.installment-radio{width:20px;height:20px;border:1px solid #BCAACB;border-radius:50%;display:grid;place-items:center;flex:none}
+.installment-option[aria-checked="true"] .installment-radio{border:5px solid var(--roxo)}
+.installment-save{position:sticky;bottom:0;background:#fff;padding:12px 20px 4px;box-shadow:0 -4px 12px #0000000a}
+.detail-month{padding:2px 18px 8px}
+.detail-year{font-size:11px;color:var(--cinza);padding:16px 0 4px}
+.detail-row{display:flex;align-items:center;justify-content:space-between;gap:var(--row-gap);padding:var(--row-padding);border-bottom:1px solid var(--divisor);font-size:var(--row-label-size);line-height:var(--row-line-height)}
+.detail-row{height:72px;padding:0;border-bottom:1px solid var(--divisor)}
+.detail-row.no-divider{border-bottom:0}
+.detail-row small{display:block;color:var(--cinza);font-size:var(--row-secondary-size);margin-top:4px}
+.detail-row .amount{color:var(--cinza);font-size:var(--row-value-size);white-space:nowrap;align-self:center}
+.senha{padding:0 20px}
+.senha h2.tit{margin-top:38px!important}
+.senha .dots{justify-content:flex-start;gap:8px;margin:36px 0 0}
+.senha .dot{width:44px;height:48px;border:1px solid #B9B3BE;border-radius:14px;display:grid;place-items:center}
+.senha .dot.full{background:#fff;border:1px solid var(--roxo)}
+.kp{gap:4px 12px}
+.kp button{padding:8px 0}
+.ok{min-height:100%;padding:77px 24px 32px}
+.ok-ic{width:48px;height:48px;border-radius:16px;margin-bottom:42px}
+.ok-ic svg{fill:none!important;stroke:currentColor!important;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.ok h2{max-width:270px;font-size:20px;font-weight:400;line-height:1.25;margin-bottom:38px}
+.ok-l{min-height:72px;font-size:var(--row-label-size);padding:24px 0;border-bottom:1px solid rgba(255,255,255,.2)}
+.ok-l .v{font-weight:400}
+.ok-l .v small{font-size:var(--row-secondary-size)}
+.ok-l.receipt-row{border-bottom:0}
+.btn-br{margin-top:18px}
+.ok .btn-br,.ok .btn-gh{width:calc(100% + 16px);margin-left:-8px}
+.voltar-idx{margin-top:10px}
+#sheet-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 16px;scrollbar-width:none}
+#sheet-body::-webkit-scrollbar{display:none}
+#sheet-body>p{padding:40px 0 4px!important;color:#000!important;font-size:16px!important;font-weight:500}
+.detail-month{padding-top:24px;padding-right:0;padding-left:0}
+.detail-year{padding-top:24px}
+.installment-list{padding:18px 0 10px}
+.installment-option{height:72px;padding:0 2px}
+.installment-save{position:sticky;bottom:-16px;margin:0 -16px;padding:12px 16px calc(4px + env(safe-area-inset-bottom,0px));}
+#resumo-parcela-inicial{font-size:19px}
+#resumo-final{margin-top:16px!important}
+#resumo-titulo{padding:20px 16px 0}
+.tela.confirmation-on{border-radius:0;overflow:hidden}
+.tela.confirmation-on #status{display:none!important}
+.insurance-sheet .sheet{height:calc(100% - 40px);max-height:calc(100% - 40px)}
+.installment-sheet .sheet{height:calc(100% - env(safe-area-inset-top,0px));max-height:none}
+.insurance-sheet .sheet-hd{background:#fff}
+.insurance-content{padding:24px 0 calc(36px + env(safe-area-inset-bottom,0px))}
+.insurance-content h2{font-size:16px;font-weight:500;line-height:1.35;color:#000;margin:0 0 12px}
+.insurance-intro{font-size:14px;line-height:1.45;color:#777;margin:0}
+.insurance-section-title{font-size:12px;line-height:1.4;color:#796D83;font-weight:500;margin:38px 0 18px}
+.insurance-row{display:grid;grid-template-columns:32px minmax(0,1fr);gap:16px;align-items:center;min-height:70px;padding:14px 0;border-bottom:0;position:relative}
+.insurance-row:after{content:"";position:absolute;right:0;bottom:0;left:52px;border-bottom:1px solid var(--divisor);pointer-events:none}
+.insurance-row:last-child:after{display:none}
+.insurance-section-title:first-of-type+.insurance-row+.insurance-row+.insurance-row:after{display:none}
+.insurance-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:12px;background:#F3EEF7;color:#27212c}
+.insurance-icon svg{width:20px;height:20px;fill:none!important;stroke:currentColor!important;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.insurance-icon .insurance-house-icon{fill:none!important;stroke:none!important}
+.insurance-icon .insurance-house-icon path{fill:#262423!important;stroke:none!important}
+.insurance-icon .insurance-solid-icon{fill:none!important;stroke:none!important}
+.insurance-icon .insurance-solid-icon path{stroke:none!important}
+.insurance-icon .insurance-solid-icon.black-icon path{fill:#000!important}
+.insurance-icon .insurance-solid-icon.dark-icon path{fill:#0E0C14!important}
+.insurance-row strong{display:block;font-size:14px;line-height:1.35;font-weight:500;color:#17131a}
+.insurance-row small{display:block;font-size:12px;line-height:1.4;color:#796D83;margin-top:3px}
+.pay-row svg path{fill:#666!important}
+.product-copy .insurance-link{border:0;padding:0;background:none;font:inherit;color:#660099;text-align:left;cursor:pointer}
+.product-copy .insurance-link:hover{text-decoration:underline}
+#sheet.insurance-sheet .sheet{height:calc(100% - env(safe-area-inset-top,0px));max-height:none;display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+@media(max-width:480px){
+  body{width:100%;min-height:100svh;padding:0;background:#fff;overflow-x:hidden}
+  .wrap{width:100%;min-height:100svh;align-items:stretch;gap:0}
+  .device{width:100%;max-width:440px;margin:0 auto;padding:0;border-radius:0}
+  .tela{width:100%;height:100svh;height:100dvh;min-height:0;border-radius:0}
+  .corpo{min-height:0;overscroll-behavior:contain}
+  .view{width:100%;min-width:0}
+  .pad{padding-right:20px;padding-left:20px}
+  h2.tit{padding-right:20px;padding-left:20px}
+  .benef{padding-right:20px;padding-left:20px}
+  .rodape{padding-right:20px;padding-left:20px}
+  .view[data-v="5"]{padding-bottom:calc(126px + env(safe-area-inset-bottom,0px))}
+  .view[data-v="5"]>.sim-spacer{display:none}
+  .view[data-v="5"]>.rodape{left:0;width:100%;transform:none;
+    padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}
+  .view[data-v="1"]{padding-top:48px;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+  .view[data-v="1"] .home-top{position:fixed;top:0;left:50vw;z-index:40;width:min(100vw,440px);height:48px;
+    transform:translateX(-50%);background:var(--roxo);padding-top:8px}
+  .view[data-v="1"]>.tabbar{position:fixed;left:50vw;bottom:0;z-index:50;width:min(100vw,440px);
+    transform:translateX(-50%);margin:0;border-radius:24px 24px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  .hero .voltar{left:16px}
+  .home-top,.home .marca,.saldo{padding-right:20px;padding-left:20px}
+  .home-actions{gap:clamp(10px,4vw,18px);padding-right:20px;padding-left:20px;flex-wrap:wrap}
+  .home .marca b{max-width:100%;overflow-wrap:anywhere}
+  .acc-header{padding-right:16px}
+  .product-row{grid-template-columns:minmax(0,1fr) auto 30px}
+  .sim-info{margin:12px 20px 40px;padding:12px}
+  .sheet{height:auto;max-height:86%}
+  .sheet-detail-row,.summary-row,.sim-footer-values{min-width:0}
+  .sim-footer-values .btn{padding-right:18px;padding-left:18px}
+  .voltar-idx{position:static;margin:12px auto 20px;padding:11px 16px;font-size:12px}
+}
+@media(max-width:360px){
+  .acc-header{padding-right:12px;padding-left:12px;grid-template-columns:32px minmax(0,1fr) max-content 16px;column-gap:8px}
+  .acc-title{font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+  .acc-summary{font-size:12px;line-height:1.25}
+  .acc-value{font-size:12px}
+  .acc-chevron{width:16px;height:16px}
+  .product-row{grid-template-columns:minmax(0,1fr) auto 26px;gap:8px}
+  .product-value{font-size:12px;white-space:normal;max-width:118px}
+  .product-action{padding:3px}
+  .product-action svg{width:20px;height:20px}
+  .product-copy{overflow-wrap:anywhere}
+  .insurance-global{grid-template-columns:32px minmax(0,1fr) 20px;gap:10px;padding-right:12px;padding-left:12px}
+  .insurance-global-title{font-size:14px}
+  .insurance-global-link{font-size:12px;gap:2px}
+  .insurance-global-link svg{width:8px;height:8px}
+  .home-actions{gap:8px}
+  .home-actions .primary{padding:10px 14px}
+  .home-actions .secondary{font-size:12px}
+  .home-servicos{padding-right:12px;padding-left:12px}
+  .home-servicos .cd{flex-basis:120px;width:120px;padding:12px}
+  .sim-footer-values{gap:8px}
+  .sim-footer-values .value{font-size:17px}
+  .sim-footer-values .btn{padding-right:14px;padding-left:14px}
+  .summary-foot{align-items:flex-end;flex-direction:row}
+  .summary-foot .btn{width:auto}
+  .installment-option{gap:8px}
+  .voltar-idx{position:static;margin:12px auto 20px;padding:11px 16px;font-size:12px}
+}
+.view h2.tit,.view .pad,.view .lbl-sec,.view .benef,.view .senha,.view .ok,
+.view .rodape,.view .idx,.view .novid,.view .proc{
+  padding-right:16px;padding-left:16px
+}
+.view>.voltar{margin-left:16px}
+.view>p{padding-right:16px!important;padding-left:16px!important}
+.view[data-v="1"] .home-top,
+.view[data-v="1"] .home .marca,
+.view[data-v="1"] .home-actions,
+.view[data-v="1"] .saldo,
+.view[data-v="1"] .novid,
+.view[data-v="1"] .home-servicos{padding-right:16px;padding-left:16px}
+.view[data-v="1"] .home-servicos h4{margin-right:0;margin-left:0}
+.view[data-v="1"] .pills,
+.view[data-v="1"] .cards{padding-right:16px;padding-left:16px}
+.view[data-v="1"] .home-servicos .cards{padding-right:16px;padding-left:0}
+.view[data-v="1"] .home-servicos{padding-right:0}
+.view[data-v="1"] .tabbar{margin-right:16px;margin-left:16px;padding-right:0;padding-left:0}
+.view[data-v="4"]>.pad{padding-right:16px;padding-left:16px}
+.view[data-v="5"]>.sim-amount,
+.view[data-v="5"]>.sim-label,
+.view[data-v="5"]>#produtos,
+.view[data-v="5"]>.sim-info,
+.view[data-v="10"]>.aviso,
+.view .aviso{margin-right:16px;margin-left:16px}
+.view[data-v="5"]>.sim-amount,
+.view[data-v="5"]>.sim-label,
+.view[data-v="5"]>#produtos{padding-right:0;padding-left:0}
+.view[data-v="10"]>div[style*="padding:24px"]{padding-right:16px!important;padding-left:16px!important}
+.view[data-v="12"] .proc{padding-right:16px;padding-left:16px}
+.view[data-v="7"] .summary-list{padding-right:0;padding-left:0}
+.view[data-v="9"] .ok .btn-br,
+.view[data-v="9"] .ok .btn-gh{width:100%;margin-left:0}
+@media(max-width:480px){
+  body .view[data-v="1"]>.tabbar{left:50vw;bottom:calc(10px + env(safe-area-inset-bottom,0px));
+    width:min(calc(100vw - 32px),408px);margin:0;transform:translateX(-50%)}
+  .hero .voltar{margin:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ DEVICE ============ -->
+  <div class="device">
+    <div class="ilha"></div>
+    <div class="tela">
+      <div class="status" id="status"><span>9:41</span><span class="dir">
+        <svg width="54" height="18" viewBox="0 0 54 18" aria-hidden="true">
+          <path d="M2 15h3V11H2zm5 0h3V8H7zm5 0h3V5h-3zm5 0h3V2h-3z" fill="currentColor"/>
+          <path d="M23 5.8c4-3.4 10-3.4 14 0l-2 2c-2.8-2.4-7.2-2.4-10 0l-2-2Zm3.4 3.3c2-1.7 5.2-1.7 7.2 0L30 13l-3.6-3.9Z" fill="currentColor"/>
+          <rect x="42" y="3" width="10" height="12" rx="2" fill="currentColor"/>
+          <rect x="44" y="5" width="6" height="8" rx="1" fill="#660099"/>
+          <rect x="53" y="7" width="1" height="4" rx=".5" fill="currentColor"/>
+        </svg>
+      </span></div>
+      <div class="corpo" id="corpo">
+
+        <!-- ---------- 0. ÍNDICE ---------- -->
+        <div class="view" data-v="0">
+          <div class="idx">
+            <h2>Core de Crédito<br>Jornada multiproduto</h2>
+            <p class="sb">Jornada atualizada com base nas referências do Figma. Simule valores, parcelas e opções de recebimento.</p>
+
+            <!-- Botão de Início Rápido -->
+            <button class="btn" style="margin-bottom: 24px;" onclick="ir(1)">Iniciar Simulação</button>
+
+            <!-- Configurações de Fluxo -->
+            <div class="lb">Configurações do Teste</div>
+            
+            <label class="optl" style="border: 1px solid var(--roxo);"><span>Cliente tem Conta Pay ativa</span>
+              <span class="sw"><input type="checkbox" id="sw-conta" checked><i></i></span></label>
+            <p class="nota2" style="margin-top:2px; margin-bottom:12px; font-size:12px; color:#8A8A94">Desative para testar o fluxo de Abertura de Conta.</p>
+
+            <label class="optl"><span>Dataprev indisponível</span>
+              <span class="sw"><input type="checkbox" id="sw-dtp"><i></i></span></label>
+
+            <!-- Premissas -->
+            <div class="lb" style="margin-top: 18px;">Premissas do motor</div>
+            <div class="prem2">
+              <div><span>Limite total estimado</span><span>R$ 10.000</span></div>
+              <div><span>Limite Crédito do Trabalhador</span><span id="p-ct">R$ 7.000</span></div>
+              <div><span>Limite EP</span><span>R$ 3.000</span></div>
+              <div><span>Taxa CT</span><span>1,80% a.m.</span></div>
+              <div><span>Taxa EP</span><span>11,75% a.m.</span></div>
+            </div>
+
+            <!-- Lista de Telas (Acesso direto) -->
+            <div class="lb" style="margin-top: 28px;">Acesso direto às telas</div>
+            <div class="psl" id="nav"></div>
+          </div>
+        </div>
+
+        <!-- ---------- 1. HOME ---------- -->
+        <div class="view" data-v="1">
+          <div class="home">
+            <div class="home-top">
+              <div class="av"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span class="bd">+9</span></div>
+              <svg viewBox="0 0 24 24" style="width:28px;height:28px;color:#fff"><rect x="3" y="5" width="18" height="3" rx="1.5"/><rect x="3" y="10.5" width="18" height="3" rx="1.5"/><rect x="3" y="16" width="18" height="3" rx="1.5"/></svg>
+            </div>
+            <div class="marca">
+              <b>Abra sua Conta Vivo Pay</b>
+              <span>Transfira, receba e pague em um só lugar</span>
+            </div>
+            <div class="home-actions">
+              <span class="primary">Abrir conta</span>
+              <span class="secondary">Conhecer opções de crédito<svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.32595 3.46071L3.02248 0.144353C2.88533 0.021206 2.71386 -0.0126731 2.56343 0.00394249C2.41648 0.0201739 2.27272 0.0856702 2.16886 0.18711C2.06893 0.281844 2.01209 0.42816 2.00175 0.567065C1.99083 0.71377 2.02925 0.889583 2.16869 1.02392L5.24446 4.00145L2.15859 6.96199L2.15375 6.96708L2.1529 6.968L2.15046 6.97069L2.14974 6.97152L2.14435 6.97752C2.02121 7.11466 1.98733 7.28614 2.00394 7.43657C2.02017 7.58352 2.08567 7.72728 2.18711 7.83114C2.28184 7.93107 2.42816 7.98791 2.56706 7.99825C2.71377 8.00917 2.88958 7.97075 3.02392 7.83131L6.32595 4.5422C6.6246 4.24355 6.6246 3.75935 6.32595 3.46071Z" fill="#660099"/>
+</svg>
+</span>
+            </div>
+          </div>
+          <div class="home-servicos">
+            <h4>Serviços Vivo Pay</h4>
+            <div class="cards">
+              <div class="cd out" onclick="ir(2)" style="cursor:pointer">
+                <div class="ic"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.72754 3.69544C6.32345 1.18382 10.4618 1.25151 12.9736 3.84486C15.3198 6.26685 15.4246 10.0502 13.2881 12.5939L18.042 17.3478C18.2241 17.5299 18.224 17.8258 18.042 18.0079C17.951 18.0966 17.8346 18.1456 17.7109 18.1456C17.5872 18.1456 17.4682 18.0967 17.3818 18.0079L12.6338 13.2609C11.451 14.2912 9.93022 14.8638 8.35156 14.8595C4.74029 14.8594 1.81269 11.9317 1.8125 8.32044C1.8125 6.58591 2.50193 4.92339 3.72754 3.69544ZM8.35156 2.71498C5.25609 2.71507 2.74707 5.22495 2.74707 8.32044C2.74716 9.80739 3.33725 11.2315 4.3877 12.2843C6.58437 14.4645 10.135 14.4505 12.3154 12.254C14.4842 10.0689 14.4842 6.54362 12.3154 4.35853C11.2649 3.30106 9.83859 2.71031 8.35156 2.71498ZM8.48047 4.59193C8.65538 4.59211 8.79781 4.73437 8.79785 4.90931V5.1388C9.21972 5.18725 9.61031 5.31494 9.9248 5.50892C10.1442 5.64432 10.1777 5.81984 10.1777 5.91322C10.1777 6.149 9.98578 6.33998 9.75 6.33998C9.6615 6.33763 9.57531 6.3125 9.49609 6.27064L9.48828 6.26771C9.25388 6.14017 9.02787 6.05625 8.79785 6.01185V7.69349C10.2002 7.89735 10.4971 8.70605 10.4971 9.35462C10.497 9.88207 10.303 10.3302 9.93652 10.6476C9.65205 10.8942 9.26226 11.0522 8.79785 11.1115V11.5675C8.79545 11.7424 8.65536 11.8828 8.48047 11.8829C8.30543 11.8829 8.16511 11.7402 8.16504 11.5675V11.13C7.59408 11.0902 7.04272 10.8994 6.57031 10.5734C6.43034 10.4754 6.36045 10.3443 6.36035 10.1857C6.36269 9.94297 6.56104 9.74891 6.80371 9.75111C6.90641 9.75344 7.00484 9.78592 7.08887 9.84193C7.44661 10.0792 7.80735 10.2222 8.16504 10.2687V8.49427C6.78633 8.29113 6.49323 7.49383 6.49316 6.85658C6.49316 5.87811 7.14191 5.21876 8.16504 5.12806V4.90931C8.16508 4.73426 8.30774 4.59193 8.48047 4.59193ZM8.79785 10.2521C9.31425 10.1527 9.62195 9.83897 9.62207 9.3849C9.62207 9.06123 9.51486 8.74232 8.79785 8.58705V10.2521ZM8.16504 5.98841C7.66336 6.0567 7.37109 6.35662 7.37109 6.81947C7.3712 7.12043 7.47368 7.44177 8.16504 7.59779V5.98841Z" fill="black"/>
+</svg>
+</div>
+                <div><b>Empréstimos</b></div>
+                <div><span>Confira opções de até R$ 10 mil</span></div>
+              </div>
+              <div class="cd fill">
+                <div class="ic"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.86426 15.4445C9.2798 15.4445 9.61659 15.5635 9.85938 15.797C10.1136 16.042 10.2421 16.3852 10.2422 16.8214C10.2422 17.2579 10.1137 17.6017 9.85938 17.8468C9.61892 18.0803 9.28213 18.1993 8.86426 18.1993C8.44655 18.1993 8.11286 18.0801 7.87012 17.8468C7.61566 17.6017 7.4873 17.258 7.4873 16.8214C7.48739 16.3851 7.61574 16.042 7.87012 15.797C8.11286 15.5636 8.44885 15.4445 8.86426 15.4445ZM13.417 15.4445C13.8324 15.4445 14.1684 15.5636 14.4111 15.797C14.6632 16.042 14.7939 16.3851 14.7939 16.8214C14.7939 17.258 14.6656 17.6017 14.4111 17.8468C14.1707 18.0801 13.8347 18.1993 13.417 18.1993C12.9991 18.1993 12.6647 18.0803 12.4219 17.8468C12.1675 17.6017 12.0391 17.2579 12.0391 16.8214C12.0391 16.3852 12.1676 16.042 12.4219 15.797C12.6647 15.5635 13.0015 15.4445 13.417 15.4445ZM8.86426 16.3781C8.52371 16.3781 8.42098 16.481 8.4209 16.8214C8.4209 17.1622 8.52357 17.2657 8.86426 17.2657C9.20509 17.2657 9.30762 17.1622 9.30762 16.8214C9.30753 16.4809 9.20495 16.3781 8.86426 16.3781ZM13.417 16.3781C13.0763 16.3781 12.9737 16.4809 12.9736 16.8214C12.9736 17.1622 13.0762 17.2657 13.417 17.2657C13.7576 17.2657 13.8604 17.1622 13.8604 16.8214C13.8603 16.481 13.7575 16.3781 13.417 16.3781ZM3.40137 1.79895C4.54051 1.79895 5.50041 2.53455 5.68262 3.54993C5.73052 3.8182 5.87322 4.64105 6.0498 5.66321H7.94922C7.98531 5.66321 8.02089 5.66708 8.05469 5.67493V2.46887C8.05489 2.0724 8.31114 1.81572 8.70996 1.81555H12.0439C12.1371 1.81555 12.2257 1.85296 12.291 1.91809L14.8008 4.42786C14.8661 4.49322 14.9033 4.58252 14.9033 4.6759V5.66321H17.7285C17.9853 5.66321 18.1953 5.87321 18.1953 6.13C18.1953 6.16962 18.191 6.20697 18.1816 6.24426C18.1135 6.51443 18.0125 6.91695 17.8945 7.38977V7.39172C17.7904 7.80903 17.6721 8.28142 17.5508 8.76575C17.238 10.0262 16.9135 11.3285 16.8154 11.7091C16.5937 12.5633 16.2744 13.1937 15.8311 13.6349C15.3665 14.0995 14.7799 14.3361 14.0889 14.3361H8.86426C8.16643 14.336 7.54805 14.0997 7.07422 13.6564C6.58168 13.1918 6.2614 12.5218 6.12598 11.6652C6.01627 10.9556 4.91426 4.56257 4.76465 3.71399C4.66428 3.15378 4.08119 2.73363 3.4043 2.73352H2.2793C2.0225 2.73352 1.81152 2.52254 1.81152 2.26575C1.81179 2.00917 2.02266 1.79895 2.2793 1.79895H3.40137ZM7.94922 6.5968H6.21094C6.56944 8.677 6.98439 11.0988 7.05078 11.5206C7.15352 12.167 7.37514 12.6546 7.71582 12.9767C8.0146 13.2591 8.40211 13.4015 8.86426 13.4015H14.0869C14.6565 13.4014 15.4643 13.203 15.9102 11.4757C15.9742 11.2302 16.1335 10.5905 16.3242 9.82629C16.4256 9.41985 16.5361 8.97786 16.6455 8.54114C16.8252 7.81757 16.9978 7.12433 17.1309 6.5968H14.9033V10.8361C14.9033 11.2258 14.6518 11.4805 14.2598 11.4806L13.8418 11.4825H8.71289C8.30676 11.4825 8.05478 11.2308 8.05469 10.8224V6.58508C8.02089 6.59293 7.98531 6.5968 7.94922 6.5968ZM8.76172 10.7823H14.2061V5.02747H12.9541C12.4035 5.02502 12.1094 4.77363 11.96 4.5636C11.7849 4.31389 11.6987 3.97764 11.6963 3.5343V2.51868H8.76172V10.7823ZM13.2021 8.96594C13.3958 8.96605 13.5518 9.12283 13.5518 9.31653C13.5517 9.51017 13.3934 9.66603 13.2021 9.66614H9.56055C9.36682 9.66614 9.21002 9.51024 9.20996 9.31653C9.20996 9.12277 9.36678 8.96594 9.56055 8.96594H13.2021ZM13.2021 7.37415C13.3958 7.37426 13.5518 7.53104 13.5518 7.72473C13.5515 7.91822 13.3933 8.07423 13.2021 8.07434H9.56055C9.36693 8.07434 9.2102 7.91829 9.20996 7.72473C9.20996 7.53097 9.36678 7.37415 9.56055 7.37415H13.2021ZM13.2021 5.77942C13.3958 5.77953 13.5518 5.93631 13.5518 6.13C13.5517 6.32362 13.3934 6.4795 13.2021 6.47961H9.56055C9.36684 6.47961 9.21006 6.32369 9.20996 6.13C9.20996 5.93624 9.36678 5.77942 9.56055 5.77942H13.2021ZM12.3965 3.53137C12.3988 4.26441 12.6629 4.32727 12.957 4.32727H13.709L12.3965 3.01282V3.53137Z" fill="black"/>
+</svg>
+</div>
+                <div><b>Consórcios</b></div>
+                <div><span>Planos a partir de R$ 40</span></div>
+              </div>
+              <div class="cd fill">
+                <div class="ic"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.24902 11.6817C4.79834 11.6818 5.24971 12.0729 5.35352 12.5851C5.83955 12.6327 6.31022 12.7548 6.75781 12.9454L7.52148 13.2638C7.94869 13.4456 8.40363 13.5463 8.86719 13.5646L9.79492 13.628C10.5223 13.6371 11.1318 14.2461 11.1318 14.9825C11.1318 15.0561 11.125 15.1288 11.1133 15.1993L15.5322 13.8009C15.914 13.6828 16.3229 13.7007 16.6865 13.8644C17.0502 14.028 17.3415 14.3279 17.4961 14.6915C17.6688 15.0914 17.6684 15.5279 17.5049 15.9278C17.3412 16.3279 17.0319 16.6369 16.6318 16.8097L9.37695 19.7647C9.17701 19.8556 8.95864 19.9014 8.73145 19.9015C8.50421 19.9015 8.27674 19.8556 8.05859 19.7647L5.22363 18.5958C5.02898 18.9297 4.66708 19.1553 4.24902 19.1554H2.79395C2.17589 19.1552 1.6671 18.6465 1.66699 18.0284V12.8097C1.66699 12.1915 2.17582 11.6819 2.79395 11.6817H4.24902ZM5.37598 17.6173L8.41309 18.8741C8.61304 18.9559 8.83161 18.9559 9.02246 18.8741L16.2773 15.919C16.4319 15.8554 16.5594 15.7281 16.623 15.5646C16.6867 15.401 16.6869 15.2279 16.6143 15.0733C16.487 14.7643 16.1413 14.61 15.8232 14.7189L11.1318 16.2003C10.8864 16.273 10.6403 16.3194 10.3857 16.3194L7.39453 16.3644C7.12186 16.3643 6.91243 16.1553 6.90332 15.8917C6.90332 15.7644 6.94912 15.6369 7.04004 15.546C7.13095 15.4551 7.24969 15.4005 7.37695 15.4005L9.75684 15.3644C9.76331 15.3641 9.76983 15.3644 9.77637 15.3644C9.99445 15.3644 10.1678 15.1918 10.168 14.9737C10.168 14.7555 9.99457 14.5821 9.77637 14.5821H9.74902L8.81348 14.5187C8.24071 14.4914 7.68582 14.3638 7.14941 14.1456L6.38574 13.8282C6.05978 13.6949 5.72117 13.6036 5.37598 13.5548V17.6173ZM2.79395 12.6368C2.70315 12.637 2.63086 12.7101 2.63086 12.8009V18.0187C2.63086 18.1095 2.70315 18.1826 2.79395 18.1827H4.24902C4.33989 18.1827 4.41211 18.1095 4.41211 18.0187V12.8009C4.41211 12.71 4.33989 12.6369 4.24902 12.6368H2.79395ZM9.33984 0.117289C10.0854 0.0718295 10.8589 0.263147 11.5771 0.663187C11.7876 0.772612 11.9979 0.897811 12.2588 1.05284C12.2795 1.06511 12.3009 1.07729 12.3223 1.08994C12.3314 1.09904 12.35 1.09904 12.3682 1.08994C12.5393 0.988542 12.7106 0.891803 12.8848 0.79307C12.9602 0.750305 13.0364 0.707108 13.1133 0.663187C13.8314 0.272311 14.6042 0.0810119 15.3496 0.117289C16.0587 0.153654 16.7229 0.408099 17.2139 0.826273C18.0594 1.54451 18.3319 2.71749 18.0137 4.1085C17.7136 5.37226 17.1317 6.67232 16.2861 7.98155C15.6225 9.01794 15.0865 9.68191 14.1865 10.6183L14.1592 10.6456C14.0955 10.7183 13.7682 11.055 13.4863 11.255C13.259 11.4277 12.9859 11.5458 12.7041 11.6095C12.6225 11.6276 12.5318 11.6455 12.4502 11.6456H12.2588C12.1588 11.6365 12.0678 11.6277 11.9951 11.6095C11.7042 11.5458 11.4402 11.4277 11.2129 11.255C10.9856 11.0822 10.7218 10.8274 10.54 10.6456C9.6219 9.70018 9.08583 9.02702 8.41309 7.98155C7.56758 6.67236 6.98557 5.36314 6.68555 4.1085C6.35829 2.70842 6.63105 1.54481 7.47656 0.817484C7.96741 0.408444 8.62178 0.153745 9.33984 0.117289ZM9.37695 1.02647C8.86782 1.05374 8.39499 1.22675 8.05859 1.51768C7.77675 1.75407 7.58573 2.08151 7.50391 2.48155C7.41308 2.89963 7.43139 3.37211 7.55859 3.9083C7.84043 5.072 8.37644 6.27246 9.18555 7.50889C9.83103 8.50893 10.3223 9.12714 11.2041 10.0362C11.3586 10.1908 11.5951 10.418 11.7588 10.5362C11.8951 10.6271 12.0496 10.7 12.2041 10.7364H12.2129C12.2264 10.7364 12.2404 10.7391 12.2539 10.7413C12.2675 10.7436 12.2814 10.7452 12.2949 10.7452H12.3955C12.4101 10.7404 12.4254 10.7389 12.4414 10.7364C12.455 10.7343 12.4698 10.7318 12.4863 10.7276H12.5039C12.6584 10.6913 12.8132 10.6274 12.9404 10.5274C13.0949 10.4184 13.3132 10.2093 13.4678 10.0548L13.4951 10.0274C14.377 9.11831 14.8682 8.50011 15.5137 7.5001C16.3047 6.27271 16.8503 5.06297 17.123 3.9083C17.2503 3.37202 17.268 2.89029 17.168 2.49034C17.0862 2.09951 16.896 1.77192 16.6143 1.52647C16.2779 1.23561 15.814 1.0626 15.2959 1.03526C14.7141 1.00799 14.1046 1.15369 13.541 1.47178C13.3806 1.55866 13.2146 1.65559 13.0264 1.76573C12.9586 1.80537 12.888 1.84743 12.8135 1.89073H12.8047C12.5137 2.05438 12.1493 2.05438 11.8584 1.89073C11.5585 1.70897 11.3318 1.58085 11.1318 1.47178C10.6137 1.1809 10.0588 1.02652 9.52246 1.02647H9.37695Z" fill="black"/>
+</svg>
+</div>
+                <div><b>Seguros</b></div>
+                <div><span>Proteções a partir de R$ 4,90</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="novid">
+            <h4>Novidades</h4>
+            <img class="banner" src="./seguro-protecao.png" alt="Seu aparelho protegido. Ofertas a partir de R$ 16,90 por mês. Seguros">
+            <div style="height:20px"></div>
+          </div>
+          <div class="tabbar">
+            <div class="tb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.7063 2.63888C11.3674 1.98624 12.6167 1.98628 13.2806 2.63888L21.3626 10.5881C21.8302 11.0475 21.9641 11.695 21.7093 12.2775C21.4431 12.8936 20.799 13.2912 20.0765 13.2912H19.5725V20.2238C19.5725 21.1118 18.782 21.8352 17.8128 21.8352H6.05692C5.08774 21.8352 4.29813 21.1119 4.29813 20.2268V13.2942H3.91142C3.18878 13.2942 2.54376 12.8967 2.27763 12.2805C2.02274 11.6979 2.15475 11.0476 2.62528 10.591L10.7063 2.63888Z" fill="#666666"/>
+</svg>Pra você</div>
+            <div class="tb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.6005 5.70391C15.6005 6.41692 15.3579 7.52998 14.6042 8.31522C14.3393 8.59128 14.1094 8.75739 13.9257 8.88098C13.5713 9.11972 13.3149 9.28583 13.4577 9.68507C13.5979 10.0771 14.0358 9.95551 14.4498 9.85801C14.5831 9.82511 17.183 9.17669 17.2157 9.17509C17.914 9.03786 18.5887 9.49809 18.7524 10.2099C18.7531 10.2127 18.9611 11.1175 18.963 11.1255C19.1279 11.8374 18.7273 12.5672 18.0457 12.7755C18.0164 12.7891 15.1754 13.5009 15.1704 13.5021C14.6308 13.6454 14.315 13.9242 14.315 14.4663C14.315 14.7087 14.4494 14.9719 14.6154 15.1902C14.6154 15.1902 17.7021 19.1762 17.7179 19.2071C18.1381 19.8041 18.031 20.6367 17.4849 21.0981C17.483 21.1001 16.7898 21.686 16.7829 21.6912C16.2379 22.153 15.4338 22.092 14.9593 21.5407C14.9347 21.519 13.0179 19.0642 12.8142 18.8038C12.6109 18.5438 12.3551 18.1474 11.9997 18.1474C11.6442 18.1474 11.3896 18.5434 11.1855 18.8038C10.9826 19.0642 9.06467 21.5194 9.04079 21.5407C8.56594 22.0916 7.76181 22.153 7.21648 21.6912C7.2107 21.686 6.51672 21.1001 6.51479 21.0981C5.96946 20.6367 5.86201 19.8041 6.28179 19.2071C6.29758 19.1762 9.38432 15.1902 9.38432 15.1902C9.54992 14.9719 9.68471 14.7087 9.68471 14.4663C9.68471 13.9242 9.3693 13.6454 8.82936 13.5021C8.82436 13.5009 5.98371 12.7891 5.95444 12.7755C5.27278 12.5672 4.87264 11.8374 5.0367 11.1255C5.03824 11.1175 5.24698 10.2127 5.24736 10.2099C5.41104 9.49809 6.08538 9.03746 6.78399 9.17509C6.81672 9.17669 9.41629 9.82511 9.54954 9.85801C9.96431 9.95551 10.4018 10.0771 10.542 9.68507C10.6849 9.28623 10.4284 9.11972 10.0745 8.88098C9.89037 8.75739 9.66045 8.59168 9.39549 8.31522C8.64142 7.52958 8.3988 6.41692 8.3988 5.70391C8.39957 3.65835 10.0367 2 12.0001 2C13.9634 2 15.6005 3.65835 15.6005 5.70391Z" fill="#666666"/>
+</svg>Assinaturas</div>
+            <div class="tb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2.00085C12 2.00085 12.0001 2.00085 12.0001 2.00085C14.4466 2.00085 16.4814 3.96425 16.6045 6.42163H17.4143C18.4642 6.42163 19.2597 7.25485 19.4 8.14472L19.4002 8.14594L21.0034 18.203L21.1804 19.3494L21.1816 19.3586C21.3352 20.5494 20.6103 21.8349 19.1894 21.9953L19.1475 22H4.85418L4.81225 21.9953C3.39141 21.8349 2.66651 20.5494 2.82006 19.3586L2.82125 19.3494L2.99824 18.203L2.99852 18.2012L4.57214 8.16715C4.62419 7.67958 4.89381 7.25339 5.22036 6.95846C5.55813 6.6534 6.03009 6.42163 6.56135 6.42163H7.39554C7.5186 3.96425 9.55339 2.00085 11.9999 2.00085C11.9999 2.00085 12 2.00085 12 2.00085ZM15.1017 6.42163C14.9805 4.78448 13.6094 3.50085 12.0001 3.50085C12.0001 3.50085 12 3.50085 12 3.50085C12 3.50085 11.9999 3.50085 11.9999 3.50085C10.3906 3.50085 9.01948 4.78448 8.89834 6.42163H15.1017Z" fill="#666666"/>
+</svg>Loja</div>
+            <div class="tb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.2461 21.9908L7.56543 22.0035H7.5625C5.55604 22.0035 3.91767 20.4274 3.81738 18.4459L3.8125 18.2535V12.7476H11.2471L11.2461 21.9908Z" fill="#666666"/>
+<path d="M20.1875 18.2535L20.1826 18.4459C20.0823 20.4274 18.444 22.0035 16.4375 22.0035H16.4346L12.7539 21.9908L12.7529 12.7476H20.1875V18.2535Z" fill="#666666"/>
+<path d="M12 3.46444C12.8595 2.31495 14.3449 1.7282 15.7881 2.11484C17.5687 2.59202 18.6642 4.38386 18.373 6.19589H19.4756C20.8697 6.19589 22 7.32621 22 8.7203C21.9997 10.1141 20.8695 11.2447 19.4756 11.2447H12.7539V6.19589H16.9062L16.8447 6.17929C17.156 5.01472 16.4701 3.85103 15.4004 3.56405C14.33 3.27723 13.1523 3.94259 12.8398 5.10702L12.8359 5.1207C12.781 5.31132 12.75 5.53994 12.75 5.76523V6.19784H11.25V5.76523L11.2441 5.59628C11.2328 5.428 11.2052 5.2636 11.1641 5.1207L11.1602 5.10702C10.8477 3.9426 9.67003 3.27725 8.59961 3.56405C7.52979 3.85093 6.84394 5.01463 7.15527 6.17929L7.09375 6.19589H11.2461V11.2447H4.52441C3.13052 11.2447 2.00033 10.1141 2 8.7203C2 7.32621 3.13032 6.19589 4.52441 6.19589H5.62695C5.3358 4.3838 6.43122 2.59197 8.21191 2.11484C9.65507 1.72826 11.1406 2.31495 12 3.46444Z" fill="#666666"/>
+</svg>Benefícios</div>
+            <div class="tb at"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.25 2C5.69365 2 2 5.69365 2 10.25V13.75C2 18.3063 5.69365 22 10.25 22H13.75C18.3063 22 22 18.3063 22 13.75V10.25C22 5.69365 18.3063 2 13.75 2H10.25ZM13.0414 5.91528V6.23292C13.2081 6.26739 13.3727 6.3107 13.5341 6.36282C14.2459 6.5927 14.8906 6.99312 15.3637 7.54519C15.7231 7.96455 15.6745 8.59584 15.2551 8.95523C14.8357 9.31461 14.2044 9.26599 13.8451 8.84663C13.6436 8.61154 13.3294 8.39843 12.9194 8.26602C12.5105 8.13396 12.0512 8.09744 11.6065 8.16641C11.161 8.2355 10.7774 8.40278 10.4964 8.62185C10.2169 8.83978 10.0667 9.08511 10.0104 9.30586C9.95572 9.52021 9.97935 9.74665 10.0992 9.97231C10.223 10.2053 10.4556 10.4448 10.8087 10.6287C11.1623 10.8129 11.5333 10.8915 12.1878 11.0178L12.2469 11.0292C12.8371 11.1429 13.4804 11.2668 14.1155 11.5977C14.7721 11.9397 15.3263 12.4478 15.6672 13.0895C16.012 13.7385 16.1099 14.4745 15.9277 15.1886C15.7472 15.8964 15.3126 16.504 14.7336 16.9555C14.2448 17.3366 13.6611 17.6018 13.0414 17.7445V18.0848C13.0414 18.6371 12.5937 19.0848 12.0414 19.0848C11.4892 19.0848 11.0414 18.6371 11.0414 18.0848V17.7835C10.8464 17.7468 10.6541 17.698 10.4661 17.6373C9.75431 17.4074 9.10963 17.007 8.63652 16.4549C8.27713 16.0356 8.32575 15.4043 8.74511 15.0449C9.16447 14.6855 9.79576 14.7341 10.1551 15.1535C10.3566 15.3886 10.6708 15.6017 11.0808 15.7341C11.4897 15.8661 11.949 15.9027 12.3937 15.8337C12.8392 15.7646 13.2228 15.5973 13.5038 15.3782C13.7833 15.1603 13.9335 14.915 13.9898 14.6942C14.0445 14.4799 14.0209 14.2535 13.901 14.0278C13.7772 13.7948 13.5446 13.5553 13.1915 13.3714C12.8379 13.1872 12.4669 13.1086 11.8124 12.9823L11.7534 12.9709C11.1631 12.8572 10.5198 12.7333 9.88466 12.4024C9.22814 12.0604 8.67387 11.5523 8.333 10.9106C7.98823 10.2616 7.89027 9.52564 8.07247 8.81146C8.25304 8.10369 8.68757 7.49611 9.26665 7.04461C9.77708 6.64663 10.3911 6.37497 11.0414 6.23738V5.91528C11.0414 5.363 11.4892 4.91528 12.0414 4.91528C12.5937 4.91528 13.0414 5.363 13.0414 5.91528Z" fill="#660099"/>
+</svg>Pay</div>
+          </div>
+        </div>
+
+        <!-- ---------- 2. TERMOS ---------- -->
+        <div class="view" data-v="2">
+          <div class="hero">
+            <button class="voltar br" onclick="ir(1)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.302 4.27227C13.7023 3.89201 14.3425 3.91218 14.7229 4.31231C15.1032 4.71266 15.0832 5.35287 14.6828 5.73321L8.02757 11.9988L14.6828 18.2645C15.0932 18.6448 15.1032 19.286 14.7229 19.6863C14.3425 20.0862 13.7022 20.1064 13.302 19.7264L5.86546 12.7293C5.66544 12.5391 5.54515 12.269 5.54515 11.9988C5.54523 11.7187 5.65535 11.4585 5.86546 11.2684L13.302 4.27227Z" fill="#0E0C14"/>
+</svg></button>
+          </div>
+          <div style="padding:40px 0 0">
+            <h2 class="tit">Vamos iniciar sua análise de crédito</h2>
+            <p style="font-size:14px;color:var(--cinza);padding:8px 16px 0;line-height:20px">Após analisar seu perfil, vamos te recomendar uma combinação com os empréstimos disponíveis pra você
+</p>
+            <div class="benef legacy-benef">
+              <div class="bf"><div class="ic details"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.6604 4.79166C10.6604 4.44648 10.3806 4.16666 10.0354 4.16666C9.69022 4.16666 9.4104 4.44648 9.4104 4.79166V5.25915C8.81652 5.35531 8.25591 5.58678 7.80229 5.94046C7.34122 6.29995 7.00211 6.77818 6.8619 7.32777C6.72067 7.88136 6.79593 8.45251 7.06508 8.95913C7.33178 9.46115 7.76907 9.86507 8.29598 10.1396C8.80923 10.407 9.33053 10.5074 9.84221 10.6061L9.88307 10.614C10.4376 10.721 10.789 10.7932 11.1265 10.969C11.4638 11.1447 11.7 11.3807 11.8311 11.6273C11.9596 11.8693 11.9885 12.122 11.9269 12.3632C11.8644 12.6084 11.703 12.8602 11.4291 13.0737C11.1544 13.288 10.7883 13.4452 10.3723 13.5097C9.95685 13.5741 9.52724 13.5403 9.14211 13.416C8.75631 13.2914 8.44925 13.0873 8.24543 12.8495C8.02081 12.5874 7.62625 12.557 7.36415 12.7816C7.10205 13.0062 7.07167 13.4008 7.29628 13.6629C7.66988 14.0988 8.18353 14.42 8.75795 14.6055C8.96965 14.6738 9.18838 14.7235 9.4104 14.7542V15.2083C9.4104 15.5535 9.69022 15.8333 10.0354 15.8333C10.3806 15.8333 10.6604 15.5535 10.6604 15.2083V14.7287C11.228 14.626 11.7622 14.3991 12.1977 14.0595C12.6588 13.7 12.9979 13.2218 13.1381 12.6722C13.2794 12.1186 13.2041 11.5475 12.9349 11.0409C12.6682 10.5388 12.231 10.1349 11.704 9.8604C11.1908 9.59301 10.6695 9.49253 10.1578 9.3939L10.1169 9.38603C9.5624 9.27902 9.21097 9.20681 8.87352 9.031C8.53626 8.8553 8.3 8.61933 8.16897 8.37268C8.04038 8.13063 8.01158 7.87796 8.07311 7.63677C8.13566 7.39157 8.29704 7.13975 8.57089 6.92624C8.84565 6.71201 9.21173 6.55481 9.62769 6.4903C10.0432 6.42587 10.4728 6.45964 10.8579 6.58402C11.2437 6.70861 11.5508 6.91265 11.7546 7.15049C11.9792 7.41259 12.3738 7.44298 12.6359 7.21836C12.898 6.99375 12.9284 6.59919 12.7037 6.33709C12.3301 5.90114 11.8165 5.58003 11.2421 5.39451C11.0529 5.33342 10.8581 5.2873 10.6604 5.25624V4.79166Z" fill="#0E0C14"/>
+<path d="M8.54167 1.66666C4.74471 1.66666 1.66667 4.7447 1.66667 8.54166V11.4583C1.66667 15.2553 4.74471 18.3333 8.54167 18.3333H11.4583C15.2553 18.3333 18.3333 15.2553 18.3333 11.4583V8.54166C18.3333 4.7447 15.2553 1.66666 11.4583 1.66666H8.54167ZM2.91667 8.54166C2.91667 5.43505 5.43507 2.91666 8.54167 2.91666H11.4583C14.5649 2.91666 17.0833 5.43505 17.0833 8.54166V11.4583C17.0833 14.5649 14.5649 17.0833 11.4583 17.0833H8.54167C5.43507 17.0833 2.91667 14.5649 2.91667 11.4583V8.54166Z" fill="#0E0C14"/>
+</svg></div><span>As melhores opções de crédito em um só lugar</span></div>
+              <div class="hr"></div>
+              <div class="bf"><div class="ic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.72753 11.3999C8.78405 11.3999 8.0192 12.1648 8.0192 13.1083V13.5769C8.0192 14.5204 8.78405 15.2852 9.72754 15.2852H10.2732C11.2167 15.2852 11.9815 14.5204 11.9815 13.5769V13.1083C11.9815 12.1648 11.2167 11.3999 10.2732 11.3999H9.72753ZM9.2692 13.1083C9.2692 12.8551 9.4744 12.6499 9.72753 12.6499H10.2732C10.5263 12.6499 10.7315 12.8551 10.7315 13.1083V13.5769C10.7315 13.83 10.5263 14.0352 10.2732 14.0352H9.72754C9.4744 14.0352 9.2692 13.83 9.2692 13.5769V13.1083Z" fill="#0E0C14"/>
+<path d="M5.64127 6.05835V7.00952C4.49301 7.47169 3.68245 8.59602 3.68245 9.90967V15.2077C3.68245 16.9336 5.08156 18.3327 6.80745 18.3327H13.1929C14.9188 18.3327 16.3179 16.9336 16.3179 15.2077V9.90967C16.3179 8.59605 15.5074 7.47173 14.3591 7.00955V6.05811C14.3582 3.64732 12.4278 1.66748 10.0726 1.66748C7.74869 1.66748 5.64219 3.6164 5.64127 6.05835ZM6.89127 6.05859C6.89206 4.34109 8.40427 2.91748 10.0726 2.91748C11.7098 2.91748 13.1083 4.30994 13.1091 6.05859V6.78467H6.89127V6.05859ZM6.80745 8.03467H13.1929C14.2284 8.03467 15.0679 8.87414 15.0679 9.90967V15.2077C15.0679 16.2433 14.2284 17.0827 13.1929 17.0827H6.80745C5.77192 17.0827 4.93245 16.2433 4.93245 15.2077V9.90967C4.93245 8.87413 5.77192 8.03467 6.80745 8.03467Z" fill="#0E0C14"/>
+</svg></div><span>Dinheiro na hora na sua conta</span></div>
+              <div class="hr"></div>
+              <div class="bf"><div class="ic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.1417 2.13879C14.2909 2.13413 14.4193 2.17868 14.5197 2.27648C14.6224 2.37452 14.6788 2.51067 14.6788 2.65539V3.8175C15.253 3.94827 15.6661 4.44595 15.6661 5.04113V6.24328C15.9508 6.35066 16.2028 6.5116 16.4034 6.72863C16.7746 7.13478 16.9527 7.68539 16.92 8.32727L16.922 9.5509H17.0079C17.6661 9.5509 18.2011 10.0988 18.2013 10.7755V13.1827C18.2012 13.8573 17.6638 14.4083 17.0079 14.4083H16.9357L16.9386 15.7413C16.9385 16.3061 16.7258 16.8384 16.3361 17.2374C15.9463 17.6389 15.4279 17.8585 14.8771 17.8585L3.85657 17.8605C3.23584 17.8557 2.68955 17.6269 2.31849 17.2208C1.94743 16.8147 1.76823 16.2658 1.80091 15.631V4.98254C1.80091 4.41781 2.0152 3.88557 2.40247 3.48645C2.79224 3.08501 3.31065 2.86541 3.86145 2.86535L14.1417 2.13879ZM2.80677 15.6613C2.78809 16.0347 2.87215 16.322 3.05188 16.5157C3.23392 16.7164 3.52075 16.8259 3.86145 16.8282L14.8771 16.8263C15.1595 16.8263 15.4238 16.7143 15.6222 16.5089C15.8204 16.3036 15.9297 16.0305 15.9298 15.7413L15.9279 14.4083H10.3673C9.11158 14.4083 8.08721 13.3578 8.08704 12.0695V11.8917C8.08705 10.6009 9.10915 9.55285 10.3673 9.55285H15.9161L15.9132 8.30383C15.9319 7.92359 15.8482 7.6366 15.671 7.44055C15.4913 7.24213 15.2155 7.13722 14.8771 7.13488L3.86145 7.13684V7.13C3.48349 7.12996 3.1241 7.01795 2.80677 6.82434V15.6613ZM10.3673 10.5841C9.6647 10.5841 9.09485 11.1708 9.09485 11.8898V12.0665C9.09485 12.7855 9.66703 13.3712 10.3673 13.3712H17.0079C17.1106 13.3735 17.1954 13.2877 17.1954 13.1827V10.7755C17.1952 10.6683 17.1105 10.5841 17.0079 10.5841H10.3673ZM10.5265 11.215C10.9744 11.2152 11.3379 11.5884 11.338 12.048C11.338 12.5077 10.9745 12.8817 10.5265 12.882C10.0783 12.882 9.71595 12.5078 9.71595 12.048C9.71603 11.5882 10.0784 11.215 10.5265 11.215ZM14.1769 4.83313H14.1749L4.35169 5.5382C4.18373 5.54061 4.07435 5.6411 4.07435 5.76477V6.04699C4.0743 6.05671 4.07196 6.06657 4.06946 6.07629C4.06779 6.08281 4.06551 6.0893 4.06458 6.09582L14.6574 6.09777V5.04309C14.6574 4.91945 14.5481 4.81666 14.4152 4.81652L14.1769 4.83313ZM3.89466 3.89953C3.57953 3.90187 3.3128 4.01383 3.11438 4.21691C2.91615 4.42229 2.80677 4.69323 2.80677 4.98254V5.00988C2.80677 5.27347 2.90222 5.52345 3.07239 5.7218C3.09596 5.04752 3.64224 4.5042 4.31653 4.50402L13.673 3.83117V3.21105L3.89466 3.89953Z" fill="black"/>
+</svg></div><span>Contratação simples e 100% online</span></div>
+            </div>
+          </div>
+          <section class="credit-options" aria-labelledby="credit-options-title">
+            <h3 class="credit-options-title" id="credit-options-title">VOCÊ PODE TER</h3>
+            <div class="credit-options-list">
+              <button class="credit-option" type="button" onclick="abrirOpcaoCredito(0)">
+                <span class="credit-option-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1843 6.21709V6.3351H14.9997C16.6565 6.3351 17.9996 7.67822 17.9996 9.33503V15.0001C17.9996 16.6569 16.6565 18.0001 14.9997 18.0001L14.9973 18.0001L4.99993 17.9607H4.99866C3.34243 17.96 2 16.6172 2 14.9608V9.33503C2 7.67822 3.34311 6.3351 4.99993 6.3351H5.81534V6.21686C5.81622 3.87265 7.83841 2.00195 10.0693 2.00195C12.3303 2.00195 14.1834 3.90278 14.1843 6.21709ZM7.01531 6.3351H12.9843V6.21731C12.9836 4.53865 11.6409 3.20192 10.0693 3.20192C8.46775 3.20192 7.01606 4.56856 7.01531 6.21731V6.3351ZM3.19997 9.33503V10.1288C5.08907 11.1111 7.13548 11.662 9.18889 11.7874V11.535C9.18889 11.1575 9.49139 10.8515 9.86455 10.8515H10.1348C10.508 10.8515 10.8105 11.1575 10.8105 11.535V11.7981C12.8935 11.6979 14.9427 11.1586 16.7997 10.1861V9.33503C16.7997 8.34094 15.9938 7.53507 14.9997 7.53507H4.99993C4.00584 7.53507 3.19997 8.34094 3.19997 9.33503ZM9.18889 12.9894C7.14361 12.8738 5.10519 12.3676 3.19997 11.468V14.9608C3.19997 15.9549 4.00584 16.7607 4.99993 16.7607H5.00229L14.9997 16.8001H15.0008C15.9944 16.7995 16.7997 15.9939 16.7997 15.0001V11.5263C14.9182 12.4154 12.878 12.9075 10.8105 12.9993V13.3005C10.8105 13.678 10.508 13.984 10.1348 13.984H9.86455C9.49139 13.984 9.18889 13.678 9.18889 13.3005V12.9894Z" fill="#0E0C14"/></svg></span>
+                <span class="credit-option-copy"><span class="credit-option-title">Crédito do Trabalhador</span><span class="credit-option-description">Exclusivo pra quem é CLT</span></span>
+                <span class="credit-option-chevron" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></span>
+              </button>
+              <button class="credit-option" type="button" onclick="abrirOpcaoCredito(1)">
+                <span class="credit-option-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5 8.54126C13.9568 8.54126 15.3068 8.8348 16.3154 9.33911C17.2668 9.81486 18.0889 10.5795 18.1221 11.6018C18.1242 11.6228 18.125 11.6447 18.125 11.6663V14.9993C18.1249 16.0534 17.2865 16.8408 16.3154 17.3264C15.3068 17.8308 13.9568 18.1243 12.5 18.1243C11.0432 18.1243 9.69315 17.8308 8.68457 17.3264C7.71352 16.8408 6.87509 16.0534 6.875 14.9993V11.6663C6.875 11.6448 6.87723 11.6231 6.87793 11.6018C6.91114 10.5795 7.73321 9.81486 8.68457 9.33911C9.6932 8.8348 11.0432 8.54126 12.5 8.54126ZM16.875 13.6643C16.6973 13.785 16.5093 13.8955 16.3154 13.9924C15.3068 14.4967 13.9568 14.7913 12.5 14.7913C11.0432 14.7913 9.69319 14.4967 8.68457 13.9924C8.49067 13.8955 8.30271 13.785 8.125 13.6643V14.9993C8.1251 15.325 8.40585 15.789 9.24414 16.2083C10.0451 16.6087 11.1954 16.8743 12.5 16.8743C13.8046 16.8743 14.9549 16.6087 15.7559 16.2083C16.5942 15.789 16.8749 15.325 16.875 14.9993V13.6643ZM4.82617 2.23364C6.48593 1.75432 8.51301 1.75443 10.1729 2.23364C11.0046 2.47387 11.7192 2.82735 12.2383 3.27661C12.7571 3.72584 13.125 4.31433 13.125 4.99927C13.1249 5.6842 12.7571 6.27271 12.2383 6.72192C11.7192 7.17118 11.0047 7.52467 10.1729 7.76489C8.51302 8.2441 6.48592 8.2442 4.82617 7.76489C4.17388 7.57648 3.59527 7.31642 3.125 6.99731V9.16626C3.1251 9.32314 3.1822 9.4684 3.37402 9.64575C3.58555 9.84114 3.92553 10.0396 4.42188 10.262C4.7368 10.4031 4.8783 10.7732 4.7373 11.0881C4.59619 11.403 4.22605 11.5445 3.91113 11.4036C3.63531 11.28 3.36907 11.1471 3.125 11.0012V13.3323C3.12504 13.4893 3.18197 13.6352 3.37402 13.8127C3.58556 14.0082 3.92546 14.2066 4.42188 14.429C4.73684 14.5701 4.87839 14.9401 4.7373 15.2551C4.59611 15.5699 4.22604 15.7106 3.91113 15.5696C3.38468 15.3338 2.8913 15.0689 2.52539 14.7307C2.14008 14.3746 1.87505 13.9151 1.875 13.3323V4.99927C1.87502 4.31447 2.2421 3.72581 2.76074 3.27661C3.2798 2.82732 3.9944 2.4739 4.82617 2.23364ZM12.5 9.79126C11.1953 9.79126 10.0451 10.0569 9.24414 10.4573C8.40593 10.8764 8.125 11.3401 8.125 11.6663C8.12525 11.9924 8.40624 12.4553 9.24414 12.8743C10.0451 13.2747 11.1952 13.5413 12.5 13.5413C13.8048 13.5413 14.9549 13.2747 15.7559 12.8743C16.5938 12.4553 16.8748 11.9924 16.875 11.6663C16.875 11.3401 16.5941 10.8764 15.7559 10.4573C14.9549 10.0569 13.8047 9.79126 12.5 9.79126ZM9.82617 3.43481C8.39288 3.02098 6.60609 3.02091 5.17285 3.43481C4.45869 3.64113 3.92318 3.92405 3.5791 4.22192C3.23487 4.52005 3.12502 4.79099 3.125 4.99927C3.12506 5.20754 3.23486 5.4785 3.5791 5.77661C3.92322 6.07452 4.45857 6.35838 5.17285 6.5647C6.60599 6.97856 8.39294 6.97845 9.82617 6.5647C10.5406 6.35837 11.0767 6.07456 11.4209 5.77661C11.7651 5.4785 11.8749 5.20754 11.875 4.99927C11.875 4.79099 11.7651 4.52005 11.4209 4.22192C11.0767 3.92397 10.5406 3.64114 9.82617 3.43481Z" fill="#0E0C14"/></svg></span>
+                <span class="credit-option-copy"><span class="credit-option-title">Empréstimo Pessoal</span><span class="credit-option-description">Opções a partir de R$ 500</span></span>
+                <span class="credit-option-chevron" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></span>
+              </button>
+              <button class="credit-option" type="button" onclick="abrirOpcaoCredito(2)">
+                <span class="credit-option-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.4211 3.08594C13.3539 3.08603 14.0697 3.49389 14.5359 4.11381C14.8803 4.57178 15.0775 5.1281 15.1517 5.6931C16.4963 5.94928 17.5127 7.13104 17.5127 8.55023V14.0054C17.5127 15.6118 16.2105 16.9141 14.6041 16.9141H4.90863C3.30224 16.9141 2 15.6118 2 14.0054V5.99457C2 4.38818 3.30224 3.08594 4.90863 3.08594H12.4211ZM3.34979 5.20833C3.23043 5.44454 3.16345 5.71183 3.16345 5.99457V14.0054C3.16345 14.9693 3.9448 15.7506 4.90863 15.7506H14.6041C15.4563 15.7506 16.1661 15.1397 16.319 14.3319H12.4771C10.7652 14.3311 9.35355 12.9601 9.35339 11.2786C9.35339 9.59694 10.7651 8.22532 12.4771 8.22452H16.319C16.1664 7.41646 15.4564 6.80523 14.6041 6.80505L5.23131 6.81187C4.28395 6.81145 3.48005 6.11684 3.34979 5.20833ZM12.4779 9.38798C11.3821 9.3885 10.5168 10.2652 10.5168 11.2786C10.517 12.2918 11.3816 13.1678 12.4771 13.1684H16.3493V9.38798H12.4779ZM12.9187 10.5802C13.2455 10.5802 13.5102 10.8451 13.5103 11.1718V11.3846C13.5103 11.7114 13.2455 11.9762 12.9187 11.9762H12.69C12.3633 11.9761 12.0984 11.7114 12.0984 11.3846V11.1718C12.0985 10.8451 12.3633 10.5803 12.69 10.5802H12.9187ZM5.23131 4.24939C4.8118 4.24955 4.49525 4.58431 4.49506 4.94852C4.49506 5.31286 4.81186 5.64813 5.23131 5.64841L13.9633 5.64235C13.8966 5.32407 13.7748 5.03776 13.6057 4.81294C13.3528 4.47668 12.9773 4.24947 12.4211 4.24939H5.23131Z" fill="#0E0C14"/></svg></span>
+                <span class="credit-option-copy"><span class="credit-option-title">Consignado INSS</span><span class="credit-option-description">Descontado no benefício mensal</span></span>
+                <span class="credit-option-chevron" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></span>
+              </button>
+              <button class="credit-option" type="button" onclick="abrirOpcaoCredito(3)">
+                <span class="credit-option-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.57 8.23535C13.0302 8.23535 13.4033 8.60845 13.4033 9.06868V9.2347C13.4033 9.69494 13.0302 10.068 12.57 10.068H12.4032C11.9429 10.068 11.5698 9.69494 11.5698 9.2347V9.06868C11.5698 8.60845 11.9429 8.23535 12.4032 8.23535H12.57Z" fill="#0E0C14"/><path d="M5.52653 1.66797C7.25332 1.66797 8.65316 3.06781 8.65316 4.7946C8.65315 4.86865 8.65011 4.94225 8.64502 5.01514C8.78171 5.04434 8.91649 5.07895 9.04948 5.11768L11.6097 3.37533C12.0538 3.043 12.6663 2.94486 13.1942 3.13932C13.793 3.36002 14.2008 3.92214 14.2008 4.70426V4.70752L14.1935 6.08773C14.382 6.23427 14.5643 6.3934 14.7371 6.56624C15.2711 7.10026 15.6768 7.71495 15.9578 8.37044H16.4575C17.493 8.37044 18.3324 9.21 18.3325 10.2454V11.2399C18.3324 12.2754 17.493 13.1149 16.4575 13.1149H15.9668C15.6829 13.7402 15.2711 14.3703 14.7803 14.8735V16.4661C14.7802 17.497 13.9442 18.3328 12.9134 18.333C11.8824 18.333 11.0466 17.4971 11.0465 16.4661V16.4303C10.3983 16.5548 9.68384 16.6199 9.11133 16.62C8.37157 16.62 7.65577 16.5135 6.97673 16.3205V16.4661C6.97667 17.4971 6.14087 18.333 5.10986 18.333C4.07886 18.333 3.24306 17.4971 3.243 16.4661V14.8109C2.25293 13.7427 1.66751 12.1665 1.66748 10.6548C1.66749 9.17711 2.22334 7.82923 3.13721 6.80876C2.67845 6.26494 2.39993 5.56251 2.3999 4.7946C2.3999 3.06781 3.79974 1.66797 5.52653 1.66797ZM12.762 4.31201C12.6369 4.26596 12.4617 4.2935 12.3503 4.382C12.3384 4.39139 12.3261 4.40034 12.3136 4.40885L9.50277 6.32292C9.33825 6.43486 9.12965 6.46173 8.94206 6.39534C8.47148 6.22882 7.96453 6.13739 7.4349 6.13737C4.9401 6.13737 2.91751 8.15999 2.91748 10.6548C2.91751 11.9577 3.46515 13.3003 4.30176 14.1061C4.42405 14.2239 4.493 14.3872 4.493 14.557V16.4661C4.49306 16.8068 4.76921 17.083 5.10986 17.083C5.45051 17.083 5.72667 16.8068 5.72673 16.4661V15.444C5.72678 15.2351 5.8312 15.0399 6.00505 14.924C6.17901 14.8081 6.39971 14.7865 6.59261 14.867C7.36703 15.1903 8.21754 15.37 9.11133 15.37C9.85629 15.3699 10.8474 15.2466 11.4746 15.0387C11.665 14.9757 11.8743 15.0077 12.0369 15.125C12.1996 15.2425 12.2965 15.4313 12.2965 15.632V16.4661C12.2966 16.8068 12.5728 17.083 12.9134 17.083C13.2539 17.0828 13.5302 16.8067 13.5303 16.4661V14.6123C13.5303 14.4386 13.6024 14.2723 13.7297 14.1541C13.7712 14.1155 13.8129 14.0758 13.8534 14.0353C14.3338 13.5547 14.7392 12.8895 14.9626 12.2759C15.0524 12.0291 15.2874 11.8649 15.5501 11.8649H16.4575C16.8026 11.8649 17.0824 11.585 17.0825 11.2399V10.2454C17.0824 9.90035 16.8026 9.62044 16.4575 9.62044H15.5306C15.2627 9.6203 15.0248 9.44946 14.939 9.19564C14.724 8.55852 14.3625 7.95925 13.8534 7.45003C13.6527 7.24936 13.4379 7.07159 13.2129 6.91699C13.0423 6.79978 12.9409 6.60554 12.9419 6.3986L12.9508 4.70426C12.9508 4.53696 12.9114 4.44814 12.8825 4.40479C12.8538 4.36178 12.8148 4.33145 12.762 4.31201ZM5.52653 2.91797C4.4901 2.91797 3.6499 3.75816 3.6499 4.7946C3.64993 5.2414 3.80534 5.65198 4.06657 5.97461C5.00559 5.29764 6.15561 4.89555 7.3999 4.88818C7.40141 4.85723 7.40315 4.82599 7.40316 4.7946C7.40316 3.75816 6.56296 2.91797 5.52653 2.91797Z" fill="#0E0C14"/></svg></span>
+                <span class="credit-option-copy"><span class="credit-option-title">Antecipação FGTS</span><span class="credit-option-description">Receba agora seu saque-aniversário</span></span>
+                <span class="credit-option-chevron" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></span>
+              </button>
+            </div>
+          </section>
+          <aside class="insurance-callout">
+            <span class="insurance-callout-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 20 6v6c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.3 2.3 4.7-5"/></svg></span>
+            <p class="insurance-callout-copy">Os empréstimos contam com a proteção do Parcela Segura</p>
+            <button class="insurance-callout-link" type="button" onclick="abrirSeguro()">Conhecer seguro<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6"/></svg></button>
+          </aside>
+          <div style="flex:1"></div>
+          <div class="rodape">
+            <p class="termos">Ao iniciar, você aceita os <a href="#">termos e condições</a></p>
+            <button class="btn" onclick="motor()">Consulte as opções de crédito</button>
+          </div>
+        </div>
+
+        <!-- ---------- 3. PROCESSANDO ---------- -->
+        <div class="view" data-v="3">
+          <div class="proc">
+            <div class="aster" id="aster"></div>
+            <p>Consultando as melhores ofertas</p>
+            <div class="et" id="proc-et">Verificando seus vínculos e margem</div>
+          </div>
+        </div>
+
+        <!-- ---------- 4. VALOR ---------- -->
+        <div class="view" data-v="4">
+          <button class="voltar" onclick="ir(2)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.302 4.27227C13.7023 3.89201 14.3425 3.91218 14.7229 4.31231C15.1032 4.71266 15.0832 5.35287 14.6828 5.73321L8.02757 11.9988L14.6828 18.2645C15.0932 18.6448 15.1032 19.286 14.7229 19.6863C14.3425 20.0862 13.7022 20.1064 13.302 19.7264L5.86546 12.7293C5.66544 12.5391 5.54515 12.269 5.54515 11.9988C5.54523 11.7187 5.65535 11.4585 5.86546 11.2684L13.302 4.27227Z" fill="#0E0C14"/>
+</svg></button>
+          <h2 class="tit" style="margin-top:22px">Quanto você precisa?</h2>
+          <p style="font-size:15.5px;color:var(--cinza);padding:10px 24px 0;line-height:1.4">Arraste para escolher o valor. Vamos montar a melhor combinação para você.</p>
+
+          <div style="flex:1"></div>
+
+          <div class="pad">
+            <div class="lbl-app">Valor desejado</div>
+            <div class="linha-val">
+              <div class="valor" id="v-valor" onclick="editarTotal()">R$ 10.000</div>
+              <input class="in-total" id="in-total" type="text" inputmode="numeric" style="display:none"
+                     onblur="salvarTotal(this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+              <button class="lapis" id="lapis-total" onclick="editarTotal()" aria-label="Editar valor">
+                <svg viewBox="0 0 24 24"><path d="M4 20h4l10-10a2.1 2.1 0 00-3-3L5 17z"/><path d="M14.5 6.5l3 3"/></svg>
+              </button>
+            </div>
+            <input type="range" class="slider" id="rg1" min="500" max="10000" step="50" value="10000" oninput="setV(this.value)">
+            <div class="faixa" id="faixa-global">De R$ 500 a R$ 10.000</div>
+            <div class="hint-total" id="hint-total"></div>
+          </div>
+
+          <div style="flex:1.35"></div>
+          <div class="rodape">
+            <button class="btn" onclick="compor()">Continuar</button>
+          </div>
+        </div>
+
+        <!-- ---------- 5. SIMULAÇÃO POR PRODUTO (ACCORDION) ---------- -->
+        <div class="view" data-v="5">
+          <nav class="simulation-nav" aria-label="Navegação da simulação">
+          <button class="voltar" onclick="ir(2)" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13.3027 4.27265C13.7031 3.89228 14.3442 3.9123 14.7246 4.31269C15.1047 4.713 15.0846 5.35326 14.6846 5.73358L8.02832 12.0002L14.6846 18.2658C15.0949 18.6462 15.105 19.2873 14.7246 19.6877C14.3442 20.088 13.7031 20.108 13.3027 19.7277L5.86621 12.7307C5.66609 12.5405 5.54598 12.2704 5.5459 12.0002C5.5459 11.7199 5.65601 11.4589 5.86621 11.2687L13.3027 4.27265Z" fill="black"/>
+           </svg></button>
+          </nav>
+          <h2 class="tit" style="margin-top:40px">Empréstimo Vivo Pay</h2>
+          <div class="sim-amount">
+            <div class="caption">Você tem disponível</div>
+            <button type="button" class="total" id="sim-total-disponivel" onclick="editarValorTotalSheet()" aria-label="Editar valor total disponível">
+              <span id="sim-total-valor">R$ 10.000</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.8974 4.51677C15.3242 2.99304 17.6448 2.99342 19.0713 4.51774C20.4747 6.01755 20.4774 8.41884 19.0703 9.9113L19.0693 9.91227L10.3232 19.2345C9.9234 19.6816 9.39391 19.9642 8.82125 20.0461L5.14254 20.6105L5.13961 20.6115C4.7909 20.6628 4.43274 20.562 4.17867 20.2961C3.92825 20.0338 3.84247 19.6788 3.8857 19.339L3.88668 19.3351L4.40914 15.4142C4.48334 14.8285 4.74092 14.2861 5.13863 13.8517L5.14449 13.8468L13.8974 4.51677ZM6.05856 14.6984C5.83032 14.9487 5.68961 15.2525 5.64938 15.5724L5.6484 15.5773L5.14645 19.3449L8.64254 18.8088C8.92162 18.7693 9.18704 18.6312 9.39449 18.3976L9.40035 18.3908L17.0293 10.2599L13.4463 6.82438L6.05856 14.6984ZM18.1591 5.37126C17.2265 4.37465 15.7423 4.37491 14.8095 5.37126L14.3017 5.91227L17.8847 9.3488L18.1591 9.05583L18.1601 9.05485C19.1118 8.04597 19.1149 6.39266 18.1591 5.37126Z" fill="#660099"/>
+</svg>
+            </button>
+          </div>
+          <div class="sim-label" style="margin-top:24px">ESSE VALOR É COMPOSTO POR</div>
+
+          <div id="aviso-dtp"></div>
+
+          <!-- Produtos Accordion injetados aqui -->
+          <div id="produtos" class="pad" style="margin-top: 4px;"></div>
+          <aside class="insurance-global" aria-label="Proteção dos empréstimos">
+            <span class="insurance-global-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.0103 2.15427C14.0737 2.15715 15.2722 2.96059 16.3335 3.67184L16.3345 3.67282C17.4129 4.39551 18.2678 4.96678 19.9009 4.71188C20.0717 4.68392 20.2624 4.73086 20.394 4.84567C20.5228 4.95485 20.6118 5.12037 20.6147 5.29391V5.32614C20.6154 5.88232 20.6224 11.9796 20.1665 14.6552C19.5447 18.2654 12.5579 21.6405 12.2593 21.7841C12.1781 21.8234 12.0912 21.8408 12.0044 21.8408C11.9176 21.8408 11.8307 21.8204 11.7495 21.7812C11.4516 21.6407 4.46897 18.2628 3.84717 14.6552C3.37104 11.91 3.38831 5.56281 3.39111 5.29391C3.3912 5.10924 3.47795 4.93605 3.62061 4.82126C3.76626 4.70641 3.9539 4.66987 4.13037 4.71188C5.73949 4.9661 6.59119 4.39571 7.66553 3.67575L7.67334 3.66989C8.73495 2.95842 9.93709 2.15428 12.0015 2.15427H12.0103ZM11.9985 3.35837C10.2931 3.35842 9.34054 3.99707 8.32959 4.67477C7.31568 5.35258 6.27321 6.04806 4.58154 5.9697C4.58995 7.69829 4.64836 12.3139 5.01807 14.4482C5.42982 16.8347 9.97616 19.557 12.0015 20.5683C14.0295 19.5571 18.5818 16.8291 18.9907 14.4482C19.3548 12.3139 19.413 7.69829 19.4214 5.9697C17.741 6.05082 16.6881 5.35538 15.6714 4.67477L15.6685 4.67282C14.6611 3.99847 13.7086 3.36118 12.0044 3.35837H11.9985ZM15.4976 8.83786C15.7301 8.60257 16.1078 8.60257 16.3403 8.83786C16.5728 9.07316 16.5728 9.45415 16.3403 9.68942L10.937 15.1572C10.825 15.2691 10.6738 15.3329 10.5171 15.333C10.3604 15.333 10.2064 15.269 10.0972 15.1572L7.67139 12.7002C7.43889 12.4649 7.43889 12.0839 7.67139 11.8486C7.90387 11.6136 8.28176 11.6135 8.51416 11.8486L10.5142 13.8799L15.4976 8.83786Z" fill="#0E0C14"/></svg></span>
+            <span class="insurance-global-copy">
+              <span class="insurance-global-title" id="insurance-global-title">Mantenha seu empréstimo protegido</span>
+              <button class="insurance-global-link" type="button" onclick="abrirSeguro()">Conhecer Parcela Segura > </button>
+            </span>
+            <label class="insurance-global-check" aria-label="Ativar proteção dos empréstimos"><input id="insurance-global-toggle" type="checkbox" checked onchange="toggleProtecaoEmprestimo(this.checked)"><i>✓</i></label>
+          </aside>
+          <div class="sim-info">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.5039 0.999151C14.7139 1.03045 22.9999 1.83181 23 12.0333C23 22.2226 14.7889 22.9804 12.582 22.9992H12.3721C12.0905 22.9991 11.7964 22.9958 11.543 22.9865C9.38616 22.9364 1.00003 22.0851 1 11.9679C1 1.83187 9.39564 1.04257 11.4961 1.00501C11.831 0.998751 12.169 0.999151 12.5039 0.999151ZM11.5215 2.38001C8.76992 2.4301 2.37402 3.46591 2.37402 11.9679C2.37405 20.4729 8.80698 21.5467 11.5742 21.6124C11.8183 21.6187 12.0999 21.6222 12.3721 21.6222C12.3743 21.6252 12.5598 21.6251 12.5693 21.6251C15.2927 21.6001 21.626 20.6167 21.626 12.0333C21.6258 3.4349 15.2341 2.41375 12.4824 2.3761C12.1633 2.37297 11.8406 2.37376 11.5215 2.38001ZM12.0059 9.26282C12.3846 9.26282 12.6953 9.57037 12.6953 9.95228V17.1017C12.6953 17.4804 12.3877 17.7902 12.0059 17.7902C11.6273 17.7899 11.3174 17.4834 11.3174 17.1017V9.95228C11.3174 9.57364 11.6273 9.26304 12.0059 9.26282ZM12.0127 6.89075C12.4164 6.87519 12.7579 7.19095 12.7705 7.59778C12.7862 8.0016 12.4694 8.34307 12.0625 8.3556H12.0098C11.606 8.33994 11.2892 8.0016 11.3018 7.59778C11.3206 7.2128 11.6277 6.90327 12.0127 6.89075Z" fill="#0E0C14"/>
+          </svg>
+
+            <span>Esta é uma simulação. Confira os valores finais na próxima tela</span>
+             </div>
+          
+          <div class="sim-spacer" style="flex:1"></div>
+
+          <div class="rodape">
+            <div class="sim-snack" id="sim-snack" role="status" aria-live="polite">
+              <span></span>
+              <button type="button" onclick="fecharSnack()">Fechar</button>
+            </div>
+            <a class="sim-footer-link" href="#" onclick="abrirDetalhesParcelas();return false">Detalhes das parcelas ›</a>
+            <div class="sim-footer-values">
+              <div>
+                <div class="caption">Parcela inicial</div>
+                <div class="value" id="tot-mes">R$ 0,00</div>
+              </div>
+              <button class="btn" onclick="continuarSimulacao()">Continuar</button>
+              <div style="display:none" id="lbl-mes">Parcela mensal</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---------- 7. RESUMO E CONTA ---------- -->
+        <div class="view" data-v="7">
+          <nav class="simulation-nav" aria-label="Navegação do resumo">
+          <button class="voltar" onclick="ir(5)" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.302 4.27227C13.7023 3.89201 14.3425 3.91218 14.7229 4.31231C15.1032 4.71266 15.0832 5.35287 14.6828 5.73321L8.02757 11.9988L14.6828 18.2645C15.0932 18.6448 15.1032 19.286 14.7229 19.6863C14.3425 20.0862 13.7022 20.1064 13.302 19.7264L5.86546 12.7293C5.66544 12.5391 5.54515 12.269 5.54515 11.9988C5.54523 11.7187 5.65535 11.4585 5.86546 11.2684L13.302 4.27227Z" fill="#0E0C14"/>
+</svg></button></nav>
+          <h2 class="tit" id="resumo-titulo" style="margin-top:20px">Antes de solicitar, confira os detalhes</h2>
+          <div class="pad" id="resumo-final" style="margin-top:14px">
+            <!-- injetado dinamicamente -->
+          </div>
+          
+          <div class="pad" id="box-recebimento" style="margin-top:24px;margin-bottom:40px">
+             <!-- injetado dinamicamente -->
+          </div>
+          
+          <div style="flex:1"></div>
+          <div class="rodape">
+            <p class="termos">Ao solicitar, você aceita os <a href="#">termos e condições</a></p>
+            <div class="summary-foot">
+              <div><div class="caption">Parcela inicial</div><div class="value" id="resumo-parcela-inicial">R$ 0,00</div></div>
+              <button class="btn" onclick="continuarResumo()">Solicitar empréstimo</button>
+            </div>
+            <div class="sim-snack" id="summary-snack" role="status" aria-live="polite">
+              <span></span>
+              <button type="button" onclick="fecharSnack()">Fechar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---------- 8. SENHA ---------- -->
+        <div class="view" data-v="8">
+          <nav class="simulation-nav" aria-label="Navegação da senha">
+          <button class="voltar" onclick="ir(7)" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.302 4.27227C13.7023 3.89201 14.3425 3.91218 14.7229 4.31231C15.1032 4.713 15.0832 5.35326 14.6828 5.73358L8.02757 11.9988L14.6828 18.2645C15.0932 18.6448 15.1032 19.286 14.7229 19.6863C14.3425 20.0862 13.7022 20.1064 13.302 19.7264L5.86546 12.7293C5.66544 12.5391 5.54515 12.269 5.54515 11.9988C5.54523 11.7199 5.65535 11.4585 5.86546 11.2684L13.302 4.27227Z" fill="#0E0C14"/></svg></button></nav>
+          <div class="senha">
+            <h2 class="tit" style="padding:0;margin-top:26px">Pra finalizar, insira sua senha Vivo Pay</h2>
+            <p style="font-size:15.5px;color:var(--cinza);margin-top:12px;line-height:1.4">
+              Use a mesma senha de 6 dígitos que você usa para autorizar transações.</p>
+            <div class="dots" id="dots"></div>
+            <a href="#" style="color:var(--roxo);font-size:15px;font-weight:600;text-decoration:none;
+               text-align:center;margin-top:26px;display:block">Esqueci minha senha</a>
+            <div class="kp" id="kp"></div>
+            <div style="padding:22px 0 18px">
+              <button class="btn" id="btn-senha" disabled onclick="ir(9)">Finalizar solicitação</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---------- 9. SUCESSO / CONFIRMAÇÃO ---------- -->
+        <div class="view" data-v="9">
+          <div class="ok">
+            <div class="ok-ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5L9.5 17L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h2 id="ok-title">Você solicitou um empréstimo</h2>
+            <div style="flex:1" id="ok-lista"></div>
+            <button class="btn-br" onclick="ir(1)">Ir pra empréstimos</button>
+            <button class="btn-gh" onclick="ir(1)">Ir pro início</button>
+          </div>
+        </div>
+
+        <!-- ---------- 10. DOCUMENTOS ---------- -->
+        <div class="view" data-v="10">
+          <nav class="simulation-nav" aria-label="Navegação dos documentos">
+          <button class="voltar" onclick="ir(6)" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.302 4.27227C13.7023 3.89201 14.3425 3.91218 14.7229 4.31231C15.1032 4.71266 15.0832 5.35287 14.6828 5.73321L8.02757 11.9988L14.6828 18.2645C15.0932 18.6448 15.1032 19.286 14.7229 19.6863C14.3425 20.0862 13.7022 20.1064 13.302 19.7264L5.86546 12.7293C5.66544 12.5391 5.54515 12.269 5.54515 11.9988C5.54523 11.7187 5.65535 11.4585 5.86546 11.2684L13.302 4.27227Z" fill="#0E0C14"/>
+</svg></button></nav>
+          <h2 class="tit" style="margin-top:20px">Envio de Documentos</h2>
+          <p style="font-size:15.5px;color:var(--cinza);padding:10px 24px 0;line-height:1.4">Precisamos de uma foto do seu RG ou CNH para abrir sua conta com segurança.</p>
+          
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px;">
+            <div style="width:100%; max-width:280px; height:180px; border:2px dashed var(--roxo); border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--roxo-claro);">
+               <svg viewBox="0 0 24 24" style="width:40px;height:40px;color:var(--roxo);margin-bottom:10px"><rect x="4" y="2" width="16" height="20" rx="2"/><rect x="7" y="6" width="10" height="2" rx="1" fill="#fff"/><rect x="7" y="10" width="10" height="2" rx="1" fill="#fff"/><rect x="7" y="14" width="7" height="2" rx="1" fill="#fff"/></svg>
+               <span style="color:var(--roxo);font-weight:500;text-align:center;font-size:14px;">Capturar Frente do Documento</span>
+            </div>
+          </div>
+
+          <div class="rodape">
+            <button class="btn" onclick="ir(11)">Continuar</button>
+          </div>
+        </div>
+
+        <!-- ---------- 12. LOADING FINAL ---------- -->
+        <div class="view" data-v="12">
+          <div class="proc" style="padding-top:40px;">
+            <div class="aster" id="aster2"></div>
+            <p>Enviando e validando<br>seus dados...</p>
+            <div class="et">Aguarde um instante</div>
+          </div>
+        </div>
+
+      </div><!-- /corpo -->
+
+      <!-- sheet: detalhes da contratação -->
+      <div class="sheet-bg" id="sheet">
+        <div class="sheet">
+          <div class="sheet-hd">
+            <b id="sheet-hd-title">Detalhes da contratação</b>
+            <button type="button" aria-label="Fechar" onclick="fecharSheet()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.7667 6.21072C17.0487 5.9287 17.5061 5.92881 17.7882 6.21072C18.0466 6.46919 18.0688 6.87489 17.8536 7.15799L17.7882 7.23221L13.0216 11.9988L17.7892 16.7654C18.0711 17.0474 18.0709 17.5048 17.7892 17.7869C17.5307 18.0453 17.125 18.0674 16.8419 17.8523L16.7677 17.7869L12.0001 13.0203L7.23349 17.7879C6.95152 18.0698 6.49411 18.0696 6.21201 17.7879C5.95343 17.5293 5.9311 17.1227 6.14658 16.8396L6.21201 16.7664L10.9786 11.9988L6.21201 7.23221C5.92999 6.95019 5.93011 6.49281 6.21201 6.21072C6.47045 5.95228 6.87617 5.93016 7.15927 6.14529L7.23349 6.21072L12.0001 10.9773L16.7667 6.21072Z" fill="black"/></svg></button>
+          </div>
+          <div class="pad" id="sheet-body"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+/* ===================== premissas ===================== */
+const CFG = {
+  ctMax: 7000, 
+  epMax: 3000,
+  taxaCT:0.0180, 
+  taxaEP:0.1175,
+  tacEP:220, tacCT:0,
+  seguro:12,
+  iofFix:0.0038, iofDia:0.000082
+};
+const PRAZOS = [6,12,18,24,36,48];
+
+let S = {
+  valor:10000, dtpOff:false, temConta:true, pixDestino:'', senha:'', seguroEmprestimo:true,
+  ct: {on:true, valor:0, teto:0, ultimoValor:0, n:24, seg:true},
+  ep: {on:true, valor:0, teto:0, ultimoValor:0, n:18, seg:true, venc:'01'}
+};
+
+let loadingSim = false;
+let contaDestino = 'vivo';
+let expProd = new Set(); // Produtos com o card expandido
+let parcelaSelecionada = null;
+let produtoEmEdicaoParcela = null;
+let vencimentoSelecionado = null;
+let origemCadastro = 7;
+let fluxoAberturaConta = false;
+let resumoSeguroRepescagem = false;
+
+const TELAS=['Home Vivo Pay','Empréstimos','Consultando (motor)','Valor desejado',
+             'Simulação (produtos)','Cadastro','Resumo da Contratação','Senha','Confirmação',
+             'Documento (Abertura)','Selfie (Abertura)','Enviando (Loading)'];
+
+/* ===================== util ===================== */
+const brl  = v => 'R$ '+(+v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const brl0 = v => 'R$ '+(+v).toLocaleString('pt-BR',{maximumFractionDigits:0});
+const pct  = v => (v*100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+const pmt  = (pv,i,n) => (n<=0||pv<=0) ? 0 : pv*i/(1-Math.pow(1+i,-n));
+const skel = '<div class="skeleton-box"></div>';
+const valStr = (v) => loadingSim ? skel : v;
+
+function getGlobalLimit() {
+    return (S.dtpOff ? 0 : CFG.ctMax) + CFG.epMax;
+}
+
+function getParcelaInfo(k, n, segOn, vlrOpcional) {
+  const isCT = k.startsWith('ct');
+  const valor = vlrOpcional !== undefined ? vlrOpcional : S[k].valor;
+  const taxa = isCT ? CFG.taxaCT : CFG.taxaEP;
+  const tac = isCT ? CFG.tacCT : CFG.tacEP;
+  const dias = Math.min(n * 30, 365);
+  const iof = valor * (CFG.iofFix + CFG.iofDia * dias);
+  const fin = valor + tac + iof;
+  const parc = pmt(fin, taxa, n);
+  const seg = segOn ? CFG.seguro : 0;
+  
+  return { 
+      val: parc + seg, 
+      taxa: taxa, 
+      total: (parc+seg)*n, 
+      juros: (parc*n - fin), 
+      iof: iof, 
+      tac: tac, 
+      cet: ((Math.pow(1+taxa,12)-1)*100 + (tac+ (seg*n))/Math.max(valor,1)*100/(n/12)) 
+  };
+}
+
+function D(k){
+  const p = S[k];
+  const inf = getParcelaInfo(k, p.n, p.seg);
+  let n = 'Empréstimo Pessoal';
+  if(k === 'ct') n = 'Crédito do Trabalhador';
+  return {
+    ...inf,
+    nome: n,
+    venc: k.startsWith('ct') ? 'Conforme ciclo da folha' : p.venc
+  };
+}
+
+function linha(k,v,o,forte){
+  return `<div class="row ${o?'obr':''}"><div class="main"><div class="k">${k}</div>
+    <div class="v ${forte?'forte':''}">${v}</div></div></div><div class="hr"></div>`;
+}
+
+/* ===================== navegação ===================== */
+function ir(n){
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',+v.dataset.v===n));
+  document.querySelector('.tela').classList.toggle('confirmation-on',n===9);
+  const roxo = (n === 1 || n === 9);
+  const escuro = (n === 2 || n === 12);
+  const status = document.getElementById('status');
+  status.className = 'status' + (roxo?' roxo':(escuro?' escuro':''));
+  document.getElementById('corpo').scrollTop=0;
+  fecharSheet();
+  
+  if(n===4) syncGlobal();
+  if(n===5) resumo();
+  if(n===7) {
+    resumoSeguroRepescagem = !S.seguroEmprestimo;
+    gerarResumoFinal();
+  }
+  if(n===8) pins();
+  if(n===9) sucesso();
+  
+  if(n===12) {
+     if(!document.getElementById('aster2').innerHTML) {
+         document.getElementById('aster2').innerHTML=[...Array(8)].map((_,i)=>
+            `<i style="transform:rotate(${i*45}deg) translateY(9px);opacity:${0.25+i*0.095}"></i>`).join('');
+     }
+     setTimeout(()=>ir(9), 3000);
+  }
+}
+
+document.getElementById('nav').innerHTML = TELAS.map((t,i)=>
+  `<button class="pss" data-p="${i+1}" onclick="ir(${i+1})"><span class="n">${i+1}</span>${t}</button>`).join('');
+
+/* ===================== 3. motor ===================== */
+const ETAPAS=['Verificando seus vínculos e margem','Analisando seu crédito','Montando a melhor combinação'];
+function motor(){
+  fluxoAberturaConta = false;
+  ir(3);
+  const el=document.getElementById('proc-et'); let i=0; el.textContent=ETAPAS[0];
+  const t=setInterval(()=>{
+    i++;
+    if(i<ETAPAS.length){ el.style.opacity=0; setTimeout(()=>{el.textContent=ETAPAS[i];el.style.opacity=1;},200); }
+    else { clearInterval(t); compor(); }
+  },1100);
+}
+
+/* ===================== 4. valor global (tela 4) ===================== */
+function syncGlobal() {
+    const teto = getGlobalLimit();
+    const rg = document.getElementById('rg1');
+    if (rg) {
+        rg.max = teto;
+        document.getElementById('faixa-global').textContent = `De R$ 500 a ${brl0(teto)}`;
+    }
+    if (S.valor > teto) S.valor = teto;
+    if (S.valor < 500) S.valor = 500;
+    setV(S.valor);
+}
+
+function setV(v){
+  const teto = getGlobalLimit();
+  S.valor = Math.max(500, Math.min(teto, +v));
+  if(document.getElementById('v-valor')) document.getElementById('v-valor').textContent=brl0(S.valor);
+  const rg=document.getElementById('rg1'); 
+  if(rg) {
+      rg.value=S.valor;
+      const pc=((S.valor-500)/(teto-500))*100;
+      rg.style.background=`linear-gradient(90deg,var(--roxo) ${pc}%,var(--trilho) ${pc}%)`;
+  }
+}
+
+function editarTotal(){
+  const w=document.getElementById('v-valor'), i=document.getElementById('in-total');
+  const l=document.getElementById('lapis-total');
+  w.style.display='none'; l.style.visibility='hidden';
+  i.value = S.valor.toLocaleString('pt-BR'); i.style.display='block'; i.focus(); i.select();
+}
+
+function salvarTotal(v){
+  const w=document.getElementById('v-valor'), i=document.getElementById('in-total');
+  const l=document.getElementById('lapis-total'), h=document.getElementById('hint-total');
+  const bruto = Math.round(parseFloat(String(v).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')))||0;
+  const teto = getGlobalLimit();
+  const alvo = Math.max(500, Math.min(teto, bruto));
+  
+  i.style.display='none'; w.style.display='block'; l.style.visibility='visible';
+  setV(alvo);
+  
+  if(bruto && bruto !== alvo){
+    h.textContent = bruto > teto ? `Seu limite disponível hoje é de ${brl0(teto)}` : `O valor mínimo é de ${brl0(500)}`;
+    h.classList.add('on'); 
+    clearTimeout(window._ht); 
+    window._ht = setTimeout(()=>h.classList.remove('on'), 2800);
+  } else {
+    h.classList.remove('on');
+  }
+}
+
+function editarValorTotalSheet(){
+  const teto = getGlobalLimit();
+  document.getElementById('sheet-hd-title').textContent = 'Quanto você gostaria de solicitar?';
+  document.getElementById('sheet-body').innerHTML = `
+    <div class="sheet-amount">
+      <label for="sheet-valor">Valor desejado</label>
+      <input id="sheet-valor" type="text" inputmode="numeric" autocomplete="off" value="${S.valor.toLocaleString('pt-BR')}">
+      <small>De R$ 500 a ${brl0(teto)}</small>
+    </div>
+    <div class="sheet-action"><button class="btn" onclick="salvarValorTotalSheet()">Simular novo valor</button></div>`;
+  document.getElementById('sheet').classList.add('on');
+  requestAnimationFrame(() => {
+    const input = document.getElementById('sheet-valor');
+    input.focus();
+    input.select();
+  });
+}
+
+function salvarValorTotalSheet(){
+  const input = document.getElementById('sheet-valor');
+  if (!input) return;
+  const bruto = Math.round(parseFloat(String(input.value).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')))||0;
+  const alvo = Math.max(500, Math.min(getGlobalLimit(), bruto));
+  fecharSheet();
+  setV(alvo);
+  compor(true);
+}
+
+/* ===================== composição ===================== */
+function compor(manter){
+  const tetoCT = S.dtpOff ? 0 : CFG.ctMax;
+  const tetoEP = CFG.epMax;
+  
+  let val = S.valor;
+  
+  let ct = Math.min(val, tetoCT); val -= ct;
+  let ep = Math.min(val, tetoEP);
+  
+  S.ct.on = ct > 0; S.ct.valor = ct; S.ct.teto = tetoCT;
+  S.ep.on = ep > 0; S.ep.valor = ep; S.ep.teto = tetoEP;
+  S.ct.ultimoValor = ct || S.ct.ultimoValor;
+  S.ep.ultimoValor = ep || S.ep.ultimoValor;
+  
+  expProd.clear(); // Todos minimizados por padrão
+  
+  if(manter) resumo(); else ir(5);
+}
+
+function scheduleSim() {
+  if(loadingSim) return;
+  loadingSim = true;
+  resumo();
+  setTimeout(() => {
+    loadingSim = false;
+    resumo();
+  }, 600);
+}
+
+function setExpProd(k) {
+  if (loadingSim) return;
+  if (expProd.has(k)) expProd.delete(k);
+  else expProd.add(k);
+  resumo();
+}
+
+/* ===================== 5. ACCORDION (Simulação) ===================== */
+function resumo(){
+  document.getElementById('aviso-dtp').innerHTML = S.dtpOff ? `
+    <div class="aviso" style="margin-top:20px"><span>⏱</span><div>
+      <b>Crédito do Trabalhador indisponível agora</b>
+      O Dataprev está fora do ar. Maximizamos as ofertas ativas.</div></div>` : '';
+
+  const disabledStr = loadingSim ? 'disabled' : '';
+  const svgChevron = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.2216 6.24622C15.5386 5.90454 16.0727 5.89616 16.4062 6.21302C16.7397 6.52993 16.7562 7.06396 16.4394 7.39759L10.6093 13.5949C10.4508 13.7617 10.2251 13.8615 9.99994 13.8615C9.76656 13.8614 9.54994 13.7699 9.39154 13.5949L3.56146 7.39759C3.24451 7.06396 3.26104 6.52996 3.59466 6.21302C3.92828 5.89628 4.46234 5.91272 4.77923 6.24622L9.99994 11.7931L15.2216 6.24622Z" fill="#666666"/>
+</svg>`;
+  const iconMoney = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.4141C15.3451 10.4141 15.625 10.6939 15.625 11.0391V16.2002L17.2672 14.5653C17.5117 14.3217 17.9074 14.3225 18.151 14.5669C18.3945 14.8114 18.3938 15.2071 18.1494 15.4507L15.4459 18.1427C15.442 18.1467 15.4377 18.1503 15.4337 18.1541C15.4099 18.1772 15.3844 18.1975 15.358 18.216C15.2565 18.2874 15.1335 18.3307 15 18.3307C14.8637 18.3307 14.7389 18.2851 14.6362 18.2111C14.6125 18.194 14.5894 18.1757 14.5678 18.1549C14.5636 18.1508 14.559 18.147 14.5548 18.1427L11.8505 15.4507C11.6062 15.2071 11.6055 14.8114 11.8489 14.5669C12.0925 14.3225 12.4882 14.3218 12.7327 14.5653L14.375 16.2002V11.0391C14.375 10.6939 14.6548 10.4141 15 10.4141Z" fill="#0E0C14"/>
+<path d="M15.2083 3.94434C16.9342 3.94434 18.3333 5.34426 18.3333 7.07015V8.96224C18.3329 9.30704 18.0532 9.58724 17.7083 9.58724C17.3634 9.58724 17.0837 9.30704 17.0833 8.96224V7.07015C17.0833 6.03462 16.2438 5.19515 15.2083 5.19515H4.79163C3.75609 5.19515 2.91663 6.03462 2.91663 7.07015V12.9303C2.91685 13.9657 3.75623 14.8053 4.79163 14.8053H9.37496C9.72009 14.8054 9.99996 15.0852 9.99996 15.4303C9.99974 15.7753 9.71996 16.0553 9.37496 16.0553H4.79163C3.06587 16.0553 1.66685 14.656 1.66663 12.9303V7.07015C1.66663 5.34426 3.06574 3.94434 4.79163 3.94434H15.2083Z" fill="#0E0C14"/>
+<path d="M6.80986 7.08317C7.1304 7.0833 7.39406 7.3248 7.42997 7.63574C7.43586 7.63758 7.44201 7.63874 7.44788 7.64063C7.75343 7.7393 8.03755 7.91337 8.24947 8.16064C8.47392 8.42273 8.44392 8.81741 8.18193 9.04199C7.91984 9.26656 7.52519 9.23568 7.30058 8.97363C7.25843 8.92446 7.18067 8.86735 7.06376 8.82959C6.94756 8.79212 6.81367 8.78095 6.68372 8.80111C6.55324 8.82136 6.44913 8.86941 6.38017 8.92318C6.31217 8.97622 6.29073 9.02423 6.28495 9.04688C6.28031 9.06536 6.28027 9.08734 6.29716 9.1193C6.31682 9.15632 6.36467 9.21371 6.45992 9.26335C6.5556 9.31319 6.65914 9.33752 6.91158 9.38623H6.91321L7.09062 9.42122C7.27806 9.46053 7.49275 9.51692 7.70585 9.62793C7.99067 9.77637 8.23903 10.0013 8.39433 10.2936C8.55209 10.5906 8.59838 10.931 8.51396 11.262C8.43052 11.5891 8.23133 11.863 7.97603 12.062C7.81286 12.1892 7.62739 12.285 7.4316 12.3509C7.40168 12.6681 7.13487 12.9164 6.80986 12.9165C6.49259 12.9165 6.23082 12.68 6.19055 12.3737C6.17376 12.3688 6.15674 12.3644 6.1401 12.359C5.83455 12.2604 5.55041 12.0863 5.3385 11.839C5.11411 11.5769 5.14487 11.1822 5.40686 10.9577C5.66892 10.7334 6.06287 10.7642 6.28739 11.026C6.32953 11.0752 6.40731 11.1323 6.52421 11.1701C6.64042 11.2076 6.77428 11.2187 6.90426 11.1986C7.03476 11.1783 7.13882 11.1303 7.2078 11.0765C7.27586 11.0234 7.29723 10.9755 7.30302 10.9528C7.30767 10.9343 7.30774 10.9124 7.29081 10.8804C7.27114 10.8433 7.22332 10.786 7.12805 10.7363C7.03238 10.6865 6.92885 10.6622 6.67639 10.6134H6.67476C6.453 10.5707 6.1669 10.5196 5.88293 10.3717C5.59802 10.2233 5.34897 9.99842 5.19364 9.70605C5.03589 9.4091 4.9896 9.06863 5.07402 8.73763C5.15745 8.4106 5.35666 8.13671 5.61194 7.93766C5.78411 7.80344 5.98114 7.70413 6.18892 7.63818C6.22374 7.32599 6.48838 7.0832 6.80986 7.08317Z" fill="#0E0C14"/>
+</svg>`;
+  const iconWorker = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.1843 6.21709V6.3351H14.9997C16.6565 6.3351 17.9996 7.67822 17.9996 9.33503V15.0001C17.9996 16.6569 16.6565 18.0001 14.9997 18.0001L14.9973 18.0001L4.99993 17.9607H4.99866C3.34243 17.96 2 16.6172 2 14.9608V9.33503C2 7.67822 3.34311 6.3351 4.99993 6.3351H5.81534V6.21686C5.81622 3.87265 7.83841 2.00195 10.0693 2.00195C12.3303 2.00195 14.1834 3.90278 14.1843 6.21709ZM7.01531 6.3351H12.9843V6.21731C12.9836 4.53865 11.6409 3.20192 10.0693 3.20192C8.46775 3.20192 7.01606 4.56856 7.01531 6.21731V6.3351ZM3.19997 9.33503V10.1288C5.08907 11.1111 7.13548 11.662 9.18889 11.7874V11.535C9.18889 11.1575 9.49139 10.8515 9.86455 10.8515H10.1348C10.508 10.8515 10.8105 11.1575 10.8105 11.535V11.7981C12.8935 11.6979 14.9427 11.1586 16.7997 10.1861V9.33503C16.7997 8.34094 15.9938 7.53507 14.9997 7.53507H4.99993C4.00584 7.53507 3.19997 8.34094 3.19997 9.33503ZM9.18889 12.9894C7.14361 12.8738 5.10519 12.3676 3.19997 11.468V14.9608C3.19997 15.9549 4.00584 16.7607 4.99993 16.7607H5.00229L14.9997 16.8001H15.0008C15.9944 16.7995 16.7997 15.9939 16.7997 15.0001V11.5263C14.9182 12.4154 12.878 12.9075 10.8105 12.9993V13.3005C10.8105 13.678 10.508 13.984 10.1348 13.984H9.86455C9.49139 13.984 9.18889 13.678 9.18889 13.3005V12.9894Z" fill="#0E0C14"/>
+</svg>`;
+  const iconCard = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.5 8.54126C13.9568 8.54126 15.3068 8.8348 16.3154 9.33911C17.2668 9.81486 18.0889 10.5795 18.1221 11.6018C18.1242 11.6228 18.125 11.6447 18.125 11.6663V14.9993C18.1249 16.0534 17.2865 16.8408 16.3154 17.3264C15.3068 17.8308 13.9568 18.1243 12.5 18.1243C11.0432 18.1243 9.69315 17.8308 8.68457 17.3264C7.71352 16.8408 6.87509 16.0534 6.875 14.9993V11.6663C6.875 11.6448 6.87723 11.6231 6.87793 11.6018C6.91114 10.5795 7.73321 9.81486 8.68457 9.33911C9.6932 8.8348 11.0432 8.54126 12.5 8.54126ZM16.875 13.6643C16.6973 13.785 16.5093 13.8955 16.3154 13.9924C15.3068 14.4967 13.9568 14.7913 12.5 14.7913C11.0432 14.7913 9.69319 14.4967 8.68457 13.9924C8.49067 13.8955 8.30271 13.785 8.125 13.6643V14.9993C8.1251 15.325 8.40585 15.789 9.24414 16.2083C10.0451 16.6087 11.1954 16.8743 12.5 16.8743C13.8046 16.8743 14.9549 16.6087 15.7559 16.2083C16.5942 15.789 16.8749 15.325 16.875 14.9993V13.6643ZM4.82617 2.23364C6.48593 1.75432 8.51301 1.75443 10.1729 2.23364C11.0046 2.47387 11.7192 2.82735 12.2383 3.27661C12.7571 3.72584 13.125 4.31433 13.125 4.99927C13.1249 5.6842 12.7571 6.27271 12.2383 6.72192C11.7192 7.17118 11.0047 7.52467 10.1729 7.76489C8.51302 8.2441 6.48592 8.2442 4.82617 7.76489C4.17388 7.57648 3.59527 7.31642 3.125 6.99731V9.16626C3.1251 9.32314 3.1822 9.4684 3.37402 9.64575C3.58555 9.84114 3.92553 10.0396 4.42188 10.262C4.7368 10.4031 4.8783 10.7732 4.7373 11.0881C4.59619 11.403 4.22605 11.5445 3.91113 11.4036C3.63531 11.28 3.36907 11.1471 3.125 11.0012V13.3323C3.12504 13.4893 3.18197 13.6352 3.37402 13.8127C3.58556 14.0082 3.92546 14.2066 4.42188 14.429C4.73684 14.5701 4.87839 14.9401 4.7373 15.2551C4.59611 15.5699 4.22604 15.7106 3.91113 15.5696C3.38468 15.3338 2.8913 15.0689 2.52539 14.7307C2.14008 14.3746 1.87505 13.9151 1.875 13.3323V4.99927C1.87502 4.31447 2.2421 3.72581 2.76074 3.27661C3.2798 2.82732 3.9944 2.4739 4.82617 2.23364ZM12.5 9.79126C11.1953 9.79126 10.0451 10.0569 9.24414 10.4573C8.40593 10.8764 8.125 11.3401 8.125 11.6663C8.12525 11.9924 8.40624 12.4553 9.24414 12.8743C10.0451 13.2747 11.1952 13.5413 12.5 13.5413C13.8048 13.5413 14.9549 13.2747 15.7559 12.8743C16.5938 12.4553 16.8748 11.9924 16.875 11.6663C16.875 11.3401 16.5941 10.8764 15.7559 10.4573C14.9549 10.0569 13.8047 9.79126 12.5 9.79126ZM9.82617 3.43481C8.39288 3.02098 6.60609 3.02091 5.17285 3.43481C4.45869 3.64113 3.92318 3.92405 3.5791 4.22192C3.23487 4.52005 3.12502 4.79099 3.125 4.99927C3.12506 5.20754 3.23486 5.4785 3.5791 5.77661C3.92322 6.07452 4.45857 6.35838 5.17285 6.5647C6.60599 6.97856 8.39294 6.97845 9.82617 6.5647C10.5406 6.35837 11.0767 6.07456 11.4209 5.77661C11.7651 5.4785 11.8749 5.20754 11.875 4.99927C11.875 4.79099 11.7651 4.52005 11.4209 4.22192C11.0767 3.92397 10.5406 3.64114 9.82617 3.43481Z" fill="black"/>
+</svg>`;
+  const iconCalendar = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.05058 13.1865C6.64881 13.1866 7.13375 13.6714 7.13375 14.2697V14.5C7.13355 15.0981 6.64869 15.5831 6.05058 15.5832H5.81946C5.22135 15.5831 4.73649 15.0981 4.73629 14.5V14.2697C4.73629 13.6714 5.22122 13.1866 5.81946 13.1865H6.05058Z" fill="#0E0C14"/>
+<path d="M10.1147 13.1865C10.7129 13.1866 11.1979 13.6714 11.1979 14.2697V14.5C11.1977 15.0981 10.7128 15.5831 10.1147 15.5832H9.88358C9.28547 15.5831 8.80061 15.0981 8.80042 14.5V14.2697C8.80042 13.6714 9.28535 13.1866 9.88358 13.1865H10.1147Z" fill="#0E0C14"/>
+<path d="M14.1788 13.1865C14.7771 13.1866 15.262 13.6714 15.262 14.2697V14.5C15.2618 15.0981 14.7769 15.5831 14.1788 15.5832H13.9477C13.3496 15.5831 12.8647 15.0981 12.8645 14.5V14.2697C12.8645 13.6714 13.3495 13.1866 13.9477 13.1865H14.1788Z" fill="#0E0C14"/>
+<path d="M6.05058 9.24202C6.64881 9.24211 7.13375 9.72694 7.13375 10.3252V10.5555C7.13366 11.1537 6.64876 11.6386 6.05058 11.6387H5.81946C5.22128 11.6386 4.73638 11.1537 4.73629 10.5555V10.3252C4.73629 9.72694 5.22122 9.24211 5.81946 9.24202H6.05058Z" fill="#0E0C14"/>
+<path d="M10.1147 9.24202C10.7129 9.24211 11.1979 9.72694 11.1979 10.3252V10.5555C11.1978 11.1537 10.7129 11.6386 10.1147 11.6387H9.88358C9.28541 11.6386 8.8005 11.1537 8.80042 10.5555V10.3252C8.80042 9.72694 9.28535 9.24211 9.88358 9.24202H10.1147Z" fill="#0E0C14"/>
+<path d="M14.1788 9.24202C14.7771 9.24211 15.262 9.72694 15.262 10.3252V10.5555C15.2619 11.1537 14.777 11.6386 14.1788 11.6387H13.9477C13.3495 11.6386 12.8646 11.1537 12.8645 10.5555V10.3252C12.8645 9.72694 13.3495 9.24211 13.9477 9.24202H14.1788Z" fill="#0E0C14"/>
+<path d="M13.2763 1.66797C13.6215 1.66797 13.9013 1.94779 13.9013 2.29297V2.71208H15.2083C16.9342 2.71208 18.3333 4.11119 18.3333 5.83708V15.208C18.3332 16.9338 16.9341 18.333 15.2083 18.333H4.79163C3.06582 18.333 1.66676 16.9338 1.66663 15.208V5.83708C1.66663 4.11119 3.06574 2.71208 4.79163 2.71208H6.16532V2.29297C6.16532 1.94779 6.44515 1.66797 6.79032 1.66797C7.1355 1.66797 7.41532 1.94779 7.41532 2.29297V2.71208H12.6513V2.29297C12.6513 1.94779 12.9311 1.66797 13.2763 1.66797ZM2.91663 15.208C2.91676 16.2434 3.75618 17.083 4.79163 17.083H15.2083C16.2437 17.083 17.0832 16.2434 17.0833 15.208V7.74381H2.91663V15.208ZM4.79163 3.96208C3.75609 3.96208 2.91663 4.80154 2.91663 5.83708V6.49381H17.0833V5.83708C17.0833 4.80154 16.2438 3.96208 15.2083 3.96208H13.9013V4.79297L13.8981 4.85726C13.8659 5.17223 13.5998 5.41797 13.2763 5.41797C12.9529 5.41797 12.6868 5.17223 12.6546 4.85726L12.6513 4.79297V3.96208H7.41532V4.79297L7.41207 4.85726C7.37988 5.17223 7.1138 5.41797 6.79032 5.41797C6.46685 5.41797 6.20076 5.17223 6.16858 4.85726L6.16532 4.79297V3.96208H4.79163Z" fill="#0E0C14"/>
+</svg>`;
+  const iconBag = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.3589 6.05786V6.1808H15.2083C16.9342 6.1808 18.3333 7.57991 18.3333 9.3058V15.2071C18.3333 16.933 16.9342 18.3321 15.2083 18.3321L15.2058 18.3321L4.79163 18.2911H4.79031C3.06502 18.2904 1.66663 16.8915 1.66663 15.1661V9.3058C1.66663 7.57991 3.06574 6.1808 4.79163 6.1808H5.64103V6.05763C5.64195 3.61568 7.74845 1.66699 10.0724 1.66699C12.4276 1.66699 14.358 3.64707 14.3589 6.05786ZM6.89103 6.1808H13.1089V6.0581C13.1081 4.30945 11.7095 2.91699 10.0724 2.91699C8.40402 2.91699 6.89181 4.3406 6.89103 6.0581V6.1808ZM2.91663 9.3058V10.1327C4.88448 11.1559 7.01621 11.7298 9.15523 11.8604V11.5974C9.15523 11.2042 9.47034 10.8855 9.85905 10.8855H10.1406C10.5293 10.8855 10.8444 11.2042 10.8444 11.5974V11.8715C13.0142 11.7672 15.1489 11.2054 17.0833 10.1923V9.3058C17.0833 8.27026 16.2438 7.4308 15.2083 7.4308H4.79163C3.75609 7.4308 2.91663 8.27026 2.91663 9.3058ZM9.15523 13.1126C7.02468 12.9921 4.90127 12.4648 2.91663 11.5277V15.1661C2.91663 16.2016 3.75609 17.0411 4.79163 17.0411H4.79409L15.2083 17.0821H15.2095C16.2445 17.0815 17.0833 16.2422 17.0833 15.2071V11.5884C15.1234 12.5146 12.9981 13.0272 10.8444 13.1229V13.4366C10.8444 13.8298 10.5293 14.1486 10.1406 14.1486H9.85905C9.47034 14.1486 9.15523 13.8298 9.15523 13.4366V13.1126Z" fill="#0E0C14"/>
+</svg>`;
+  const iconShield = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.8501 7.66945C13.1034 7.43507 13.4994 7.4504 13.7339 7.70363C13.9683 7.95692 13.9529 8.35294 13.6997 8.58742L9.64858 12.3374C9.4091 12.559 9.03934 12.5588 8.79978 12.3374L7.01674 10.687C6.76371 10.4526 6.7484 10.0573 6.98256 9.80405C7.21704 9.55082 7.61306 9.53545 7.86635 9.76987L9.22377 11.0264L12.8501 7.66945Z" fill="#0E0C14"/>
+<path d="M9.87237 1.67742C9.98476 1.6566 10.102 1.66697 10.2101 1.70835L17.0973 4.34344L17.1787 4.38169C17.3615 4.48396 17.4828 4.67323 17.4969 4.88625C17.8952 10.8999 15.4304 15.9105 10.2606 18.2782C10.0956 18.3536 9.90553 18.3535 9.74054 18.2782C4.57065 15.9105 2.10508 10.8999 2.50339 4.88625L2.51641 4.79673C2.56012 4.59221 2.70406 4.42077 2.90297 4.34425L9.76251 1.70835L9.87237 1.67742ZM3.72979 5.36395C3.49387 10.6769 5.67631 14.9112 10.0001 17.016C14.3238 14.9115 16.5059 10.678 16.2705 5.36558L9.98712 2.96079L3.72979 5.36395Z" fill="#0E0C14"/>
+</svg>`;
+  const iconPlus = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.99726 2.52539C10.4169 2.52555 10.6671 2.86047 10.6672 3.18945V9.26855H16.8078C17.1812 9.28999 17.4779 9.58652 17.4992 9.95996C17.5204 10.3611 17.2131 10.7072 16.8098 10.7285H10.7287V16.8086C10.7095 17.18 10.4106 17.4788 10.0393 17.498C9.63819 17.5191 9.29301 17.2118 9.27168 16.8086V10.6719H3.19062C2.81939 10.6527 2.52057 10.4102 2.50117 10.0391C2.47983 9.63782 2.78725 9.34557 3.19062 9.32422H9.32832V3.18945C9.3284 2.85714 9.59693 2.52539 9.99726 2.52539Z" fill="black"/>
+</svg>`;
+  const pencil = `<svg width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.8974 4.51698C15.3241 2.99316 17.6447 2.99291 19.0713 4.51698C20.4747 6.01679 20.4774 8.41906 19.0703 9.91151H19.0693L10.3232 19.2348C9.92345 19.6817 9.39384 19.9644 8.82128 20.0463L5.14257 20.6107H5.13964C4.79083 20.6621 4.43278 20.5614 4.1787 20.2953C3.92829 20.033 3.84242 19.678 3.88573 19.3383L3.88671 19.3353L4.40917 15.4135C4.48341 14.8279 4.74113 14.2862 5.13866 13.8519L5.14452 13.8461L13.8974 4.51698ZM6.05858 14.6986C5.83036 14.9489 5.68964 15.2527 5.6494 15.5726L5.64842 15.5766L5.14647 19.3451L8.64257 18.809C8.92157 18.7695 9.18708 18.6313 9.39452 18.3978L9.40038 18.391L17.0293 10.2601L13.4463 6.82362L6.05858 14.6986ZM18.1592 5.37148C17.2265 4.37476 15.7423 4.3749 14.8096 5.37148L14.3017 5.91249L17.8848 9.34804L18.1592 9.05507L18.1601 9.05409C19.1118 8.04526 19.1148 6.39289 18.1592 5.37148Z" fill="#660099"/>
+</svg>
+`;
+  let h='';
+  
+  ['ct','ep'].forEach(k=>{
+    const p=S[k];
+    const d=D(k);
+    const isCT=k==='ct';
+    const isExpanded=expProd.has(k);
+    const icon=isCT?iconWorker:iconCard;
+    const indisponivel=p.teto===0;
+
+    if(!p.on){
+      h+=`
+      <div class="acc-card off ${isExpanded?'expanded':''}">
+        <div class="acc-header" onclick="setExpProd('${k}')">
+          <span class="acc-header-icon">${icon}</span>
+          <span class="acc-header-copy"><span class="acc-title">${d.nome}</span><span class="acc-summary">${indisponivel?'Este produto não está disponível agora':'Ative pra incluir na combinação'}</span></span>
+          <span class="acc-value"></span><span class="acc-chevron">${svgChevron}</span>
+        </div>
+        <div class="acc-body">
+          <div class="row product-row is-off"><div class="product-copy">Valor</div><div class="product-value"></div><button class="product-action" tabindex="-1" aria-disabled="true" aria-label="Editar valor">${pencil}</button></div>
+          <div class="row product-row is-off"><div class="product-copy">Parcelas<small>Juros de ${pct(isCT?CFG.taxaCT:CFG.taxaEP)} ao mês</small></div><div class="product-value"></div><button class="product-action" tabindex="-1" aria-disabled="true" aria-label="Editar parcelas">${pencil}</button></div>
+          ${isCT?`<div class="row product-row is-off company-row"><div class="product-copy">Pagamento<small>Desconto direto no salário</small></div><div class="product-value"></div><span></span></div>`:`<div class="row product-row is-off"><div class="product-copy">Vencimento da 1ª parcela<small>Pagamento via Pix</small></div><div class="product-value"></div><button class="product-action" tabindex="-1" aria-disabled="true" aria-label="Editar vencimento">${pencil}</button></div>`}
+          <div class="row product-row product-info-row"><div class="product-copy"><button type="button" onclick="abrirOpcaoCredito(${isCT?0:1})">Conhecer empréstimo<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6.25293 2.95996C6.60626 2.58663 7.19991 2.56659 7.57324 2.91992L12.2461 7.31934C12.4328 7.49267 12.5391 7.74 12.5391 8C12.539 8.25989 12.4327 8.50642 12.2461 8.67969L7.57324 13.0801C7.19998 13.4333 6.60629 13.4132 6.25293 13.04C5.8996 12.6667 5.91964 12.0731 6.29297 11.7197L10.2461 8L6.29297 4.2793C5.91979 3.92598 5.89972 3.33326 6.25293 2.95996Z" fill="#666666"/></svg></button></div></div>
+        </div>
+        <div class="combo-row"><span>${indisponivel?'Produto indisponível no momento':'Incluir na combinação'}</span><label class="tg"><input type="checkbox" onchange="toggleProd('${k}', this.checked)" ${disabledStr} ${indisponivel?'disabled':''}><i></i></label></div>
+      </div>`;
+      return;
+    }
+
+    const curInf=getParcelaInfo(k,p.n,p.seg);
+    const installmentText=loadingSim?skel:`${p.n}x de ${brl(curInf.val)}`;
+    const amountText=loadingSim?skel:brl(p.valor);
+
+    h+=`
+    <div class="acc-card ${isExpanded?'expanded':''}">
+      <div class="acc-header" onclick="setExpProd('${k}')">
+        <span class="acc-header-icon">${icon}</span>
+        <span class="acc-header-copy"><span class="acc-title">${d.nome}</span><span class="acc-summary">${installmentText}</span></span>
+        <span class="acc-value">${amountText}</span>
+        <span class="acc-chevron">${svgChevron}</span>
+      </div>
+      <div class="acc-body">
+        <div class="row product-row"><div class="product-copy">Valor</div><div class="product-value">${brl(p.valor)}</div><button class="product-action" onclick="editar('${k}')" aria-label="Editar valor">${pencil}</button></div>
+        <div class="row product-row"><div class="product-copy">Parcelas<small>Juros de ${pct(curInf.taxa)} ao mês</small></div><div class="product-value">${p.n}x de ${brl(curInf.val)}</div><button class="product-action" onclick="abrirParcelas('${k}')" aria-label="Editar parcelas">${pencil}</button></div>
+        ${isCT?`<div class="row product-row company-row"><div class="product-copy">Pagamento<small>Desconto direto no salário</small></div><div class="product-value">Acme Corporation</div><span></span></div>`:`<div class="row product-row"><div class="product-copy">Vencimento da 1ª parcela<small>Pagamento via Pix</small></div><div class="product-value">Dia ${p.venc}</div><button class="product-action" onclick="abrirVencimentos('${k}')" aria-label="Editar vencimento">${pencil}</button></div>`}
+        <div class="row product-row product-info-row"><div class="product-copy"><button type="button" onclick="abrirOpcaoCredito(${isCT?0:1})">Conhecer empréstimo<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6.25293 2.95996C6.60626 2.58663 7.19991 2.56659 7.57324 2.91992L12.2461 7.31934C12.4328 7.49267 12.5391 7.74 12.5391 8C12.539 8.25989 12.4327 8.50642 12.2461 8.67969L7.57324 13.0801C7.19998 13.4333 6.60629 13.4132 6.25293 13.04C5.8996 12.6667 5.91964 12.0731 6.29297 11.7197L10.2461 8L6.29297 4.2793C5.91979 3.92598 5.89972 3.33326 6.25293 2.95996Z" fill="#666666"/></svg></button></div></div>
+      </div>
+      <div class="combo-row"><span>Incluso na combinação</span><label class="tg"><input type="checkbox" checked onchange="toggleProd('${k}', this.checked)" ${disabledStr}><i></i></label></div>
+    </div>`;
+  });
+  document.getElementById('produtos').innerHTML=h;
+  document.getElementById('insurance-global-toggle').checked=S.seguroEmprestimo;
+  document.getElementById('insurance-global-title').textContent='Mantenha seu empréstimo protegido';
+
+  const at=['ct','ep'].filter(k=>S[k].on);
+  const totalMes = at.reduce((a,k)=>{const inf = getParcelaInfo(k, S[k].n, S[k].seg); return a + inf.val;},0);
+  const totalLib = at.reduce((a,k)=>a+S[k].valor,0);
+  
+  document.getElementById('tot-mes').innerHTML = loadingSim ? skel : brl(totalMes);
+  document.getElementById('sim-total-valor').textContent = loadingSim ? 'Calculando…' : brl0(totalLib);
+  
+  const prazosIguais = at.length<2 || at.every(k=>S[k].n===S[at[0]].n);
+  document.getElementById('lbl-mes').textContent = prazosIguais ? 'Parcela mensal' : 'Parcelas (prazos diferentes)';
+}
+
+function getAtivos() {
+    return ['ct', 'ep'].filter(k => S[k].on);
+}
+
+function toggleProtecaoEmprestimo(checked) {
+    S.seguroEmprestimo=checked;
+    S.ct.seg=checked;
+    S.ep.seg=checked;
+    scheduleSim();
+    mostrarSnack(checked ? 'Você adicionou o seguro do seu empréstimo' : 'Você removeu o seguro do seu empréstimo');
+}
+
+function toggleProd(k, checked) {
+    const ativos = getAtivos();
+    
+    if (!checked && ativos.length <= 1) {
+        alert('Você precisa manter pelo menos um produto ativo na oferta.');
+        scheduleSim();
+        return;
+    }
+    
+    S[k].on = checked;
+    if (!checked) {
+        S[k].ultimoValor = S[k].valor;
+        S[k].valor = 0;
+          expProd.add(k);
+    } else {
+        S[k].valor = Math.min(S[k].ultimoValor || 500, S[k].teto);
+          expProd.add(k);
+    }
+    
+    S.valor = ['ct', 'ep'].reduce((acc, curr) => acc + S[curr].valor, 0);
+    scheduleSim();
+    mostrarSnack();
+}
+
+let snackTimer = null;
+function mostrarSnack(mensagem='O valor disponível foi alterado') {
+    const el = document.querySelector('.view.on .sim-snack');
+    if (!el) return;
+    el.querySelector('span').textContent=mensagem;
+    el.classList.add('on');
+    clearTimeout(snackTimer);
+    snackTimer = setTimeout(fecharSnack, 2000);
+}
+function fecharSnack() {
+    clearTimeout(snackTimer);
+    document.querySelectorAll('.sim-snack').forEach(el=>el.classList.remove('on'));
+}
+
+function editar(k){
+  const p = S[k];
+  document.getElementById('sheet-hd-title').textContent = 'Quanto você gostaria de solicitar?';
+  document.getElementById('sheet-body').innerHTML = `
+    <div class="sheet-amount">
+      <label for="sheet-valor">Valor desejado</label>
+      <input id="sheet-valor" type="text" inputmode="numeric" autocomplete="off" value="${p.valor.toLocaleString('pt-BR')}">
+      <small>De ${brl0(Math.min(500, p.teto))} a ${brl0(p.teto)}</small>
+    </div>
+    <div class="sheet-action"><button class="btn" onclick="salvarValorProduto('${k}')">Simular novo valor</button></div>`;
+  document.getElementById('sheet').classList.add('on');
+  requestAnimationFrame(() => {
+    const input = document.getElementById('sheet-valor');
+    input.focus();
+    input.select();
+  });
+}
+
+function salvarValorProduto(k){
+  const input = document.getElementById('sheet-valor');
+  if (!input) return;
+  fecharSheet();
+  editVal(k, input.value);
+}
+
+function abrirParcelas(k){
+  produtoEmEdicaoParcela = k;
+  parcelaSelecionada = S[k].n;
+  document.getElementById('sheet-hd-title').textContent = 'Quantas parcelas você quer pagar?';
+  const options = PRAZOS.map(n => {
+    const inf = getParcelaInfo(k, n, S[k].seg);
+    return `<button type="button" class="installment-option" data-prazo="${n}" role="radio" aria-checked="${n === parcelaSelecionada}" onclick="selecionarParcela(${n})">
+      <span>${n}x de ${brl(inf.val)}</span><span class="installment-radio"></span></button>`;
+  }).join('');
+  document.getElementById('sheet-body').innerHTML = `
+    <div class="installment-list" role="radiogroup" aria-label="Quantidade de parcelas">${options}</div>
+    <div class="installment-save">
+      <div class="sim-footer-values">
+        <div><div class="caption">Parcela inicial</div><div class="value" id="sheet-parcela-inicial"></div></div>
+        <button class="btn" id="sheet-salvar-parcela" onclick="salvarParcela('${k}')">Continuar</button>
+      </div>
+    </div>`;
+  atualizarParcelaSheet(k);
+  document.getElementById('sheet').classList.add('on');
+}
+
+function selecionarParcela(n){
+  parcelaSelecionada = n;
+  document.querySelectorAll('.installment-option').forEach(option => {
+    option.setAttribute('aria-checked', String(Number(option.dataset.prazo) === n));
+  });
+  atualizarParcelaSheet(produtoEmEdicaoParcela);
+}
+
+function atualizarParcelaSheet(k){
+  if (!k || parcelaSelecionada === null) return;
+  const totalParcela = getAtivos().reduce((total, produto) => {
+    const prazo = produto === k ? parcelaSelecionada : S[produto].n;
+    return total + getParcelaInfo(produto, prazo, S[produto].seg).val;
+  }, 0);
+  const amount = document.getElementById('sheet-parcela-inicial');
+  if (amount) amount.textContent = brl(totalParcela);
+  const saveButton = document.getElementById('sheet-salvar-parcela');
+  if (saveButton) saveButton.textContent = parcelaSelecionada === S[k].n ? 'Salvar parcela' : 'Salvar parcela';
+}
+
+function salvarParcela(k){
+  if (parcelaSelecionada === null) return;
+  S[k].n = parcelaSelecionada;
+  parcelaSelecionada = null;
+  produtoEmEdicaoParcela = null;
+  fecharSheet();
+  resumo();
+}
+
+function abrirVencimentos(k){
+  vencimentoSelecionado = S[k].venc;
+  document.getElementById('sheet-hd-title').textContent = 'Quando você quer pagar?';
+  const options = ['01','05','10','15','20','25'].map(dia => `
+    <button type="button" class="installment-option" data-vencimento="${dia}" role="radio" aria-checked="${dia === vencimentoSelecionado}" onclick="selecionarVencimento('${dia}')">
+      <span>Dia ${dia}</span><span class="installment-radio"></span>
+    </button>`).join('');
+  document.getElementById('sheet-body').innerHTML = `
+    <div class="installment-list" role="radiogroup" aria-label="Dia de vencimento">${options}</div>
+    <div class="installment-save"><button class="btn" onclick="salvarVencimento('${k}')">Salvar vencimento</button></div>`;
+  document.getElementById('sheet').classList.add('on');
+}
+
+function selecionarVencimento(dia){
+  vencimentoSelecionado = dia;
+  document.querySelectorAll('.installment-option[data-vencimento]').forEach(option => {
+    option.setAttribute('aria-checked', String(option.dataset.vencimento === dia));
+  });
+}
+
+function salvarVencimento(k){
+  if (!vencimentoSelecionado) return;
+  S[k].venc = vencimentoSelecionado;
+  vencimentoSelecionado = null;
+  fecharSheet();
+  scheduleSim();
+}
+
+function abrirDetalhesParcelas(){
+  const ativos = getAtivos();
+  const totalParcelas = Math.max(...ativos.map(k => S[k].n));
+  const inicio = new Date();
+  let anoAtual = -1;
+  let rows = '';
+  for(let i = 0; i < totalParcelas; i++){
+    const data = new Date(inicio.getFullYear(), inicio.getMonth() + i, 1);
+    const ano = data.getFullYear();
+    if(ano !== anoAtual){
+      rows += `<div class="detail-year">${ano}</div>`;
+      anoAtual = ano;
+    }
+    const mes = new Intl.DateTimeFormat('pt-BR', {month:'long'}).format(data);
+    const valor = ativos.reduce((total, k) => {
+      if(i >= S[k].n) return total;
+      return total + getParcelaInfo(k, S[k].n, S[k].seg).val;
+    }, 0);
+    const prazoLabel = `Parcela ${i + 1} de ${totalParcelas}`;
+    const proximaData = new Date(inicio.getFullYear(), inicio.getMonth() + i + 1, 1);
+    const noDivider = i === totalParcelas - 1 || proximaData.getFullYear() !== ano;
+    rows += `<div class="row detail-row${noDivider ? ' no-divider' : ''}"><div>${mes[0].toLocaleUpperCase('pt-BR') + mes.slice(1)}<small>${prazoLabel}</small></div><span class="amount">${brl(valor)}</span></div>`;
+  }
+  const observacao = '';
+  document.getElementById('sheet').classList.add('installment-sheet');
+  document.getElementById('sheet-hd-title').textContent = '';
+  document.getElementById('sheet-body').innerHTML = `${observacao}<div class="detail-month">${rows}</div>`;
+  document.getElementById('sheet').classList.add('on');
+}
+
+function editVal(k,v){
+  const bruto = Math.round(parseFloat(String(v).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')))||0;
+  const teto = S[k].teto;
+  let alvo = Math.min(teto, bruto);
+  const bateu = bruto > teto;
+  
+  if (alvo > 0 && alvo < 500) {
+      alert("O valor mínimo permitido por produto é de R$ 500.");
+      alvo = 500;
+  }
+  
+  const ativos = getAtivos();
+  
+  if (alvo === 0) {
+      if (ativos.length <= 1) {
+          alert("Você precisa manter pelo menos um produto ativo.");
+          alvo = 500;
+          S[k].on = true;
+      } else {
+          S[k].on = false;
+          expProd.delete(k);
+      }
+  } else {
+      S[k].on = true; 
+  }
+  
+  S[k].valor = alvo;
+  if (alvo > 0) S[k].ultimoValor = alvo;
+  S.valor = ['ct', 'ep'].reduce((acc, curr) => acc + S[curr].valor, 0);
+  
+  if(bateu && alvo > 0){
+    const h = document.getElementById('h-'+k);
+    if(h){ h.classList.add('alerta'); h.textContent = `Máximo disponível neste produto: ${brl0(teto)}`; setTimeout(()=>h.classList.remove('alerta'), 2600); }
+  }
+  
+  scheduleSim();
+}
+
+function changeParcela(k, n) {
+  S[k].n = parseInt(n, 10);
+  resumo();
+}
+
+function continuarSimulacao(){
+  ir(7); 
+}
+
+/* ===================== 6. Cadastro ===================== */
+function editarEmail() {
+  document.getElementById('vw-email').style.display = 'none';
+  document.getElementById('act-email').style.display = 'none';
+  const input = document.getElementById('in-email');
+  input.style.display = 'block';
+  input.focus();
+}
+
+function salvarEmail(v) {
+  document.getElementById('vw-email').textContent = v || 'email@exemplo.com';
+  document.getElementById('vw-email').style.display = 'block';
+  document.getElementById('in-email').style.display = 'none';
+  document.getElementById('act-email').style.display = 'flex';
+}
+
+/* ===================== sheet ===================== */
+function abrirOpcaoCredito(indice){
+  const opcoes = [
+    {
+      nome:'Crédito do Trabalhador',
+      titulo:'Conheça o novo consignado privado',
+      itens:[
+        ['Juros menores que outros créditos','Você pode parcelar em até 60 vezes'],
+        ['Contratação online e crédito na sua conta','Não precisa de aprovação da sua empresa'],
+        ['Tem a proteção do Parcela Segura','O seguro pro seu empréstimo']
+      ]
+    },
+    {
+      nome:'Empréstimo Pessoal',
+      titulo:'Confira as vantagens do crédito pessoal da Vivo',
+      itens:[
+        ['Empréstimos a partir de R$ 500','Você pode parcelar em até 40 vezes'],
+        ['Crédito na sua Conta Vivo Pay','Após aprovação, o dinheiro cai em instantes'],
+        ['Tem a proteção do Parcela Segura','O seguro pro seu empréstimo']
+      ]
+    },
+    {
+      nome:'Consignado INSS',
+      titulo:'Conheça o Consignado INSS',
+      itens:[
+        ['Descontado direto do benefício','Parcelas descontadas mensalmente'],
+        ['Contratação simples e online','Consulte as condições disponíveis para você'],
+        ['Tem a proteção do Parcela Segura','O seguro pro seu empréstimo']
+      ]
+    },
+    {
+      nome:'Antecipação FGTS',
+      titulo:'Conheça a antecipação do FGTS',
+      itens:[
+        ['Receba agora seu saque-aniversário','Antecipe parcelas futuras do FGTS'],
+        ['Crédito direto na sua conta','Consulte as condições disponíveis para você'],
+        ['Tem a proteção do Parcela Segura','O seguro pro seu empréstimo']
+      ]
+    }
+  ];
+  const opcao = opcoes[indice];
+  if(!opcao) throw new RangeError(`Opção de crédito inválida: ${indice}`);
+
+  const sheet = document.getElementById('sheet');
+  sheet.classList.remove('detail-sheet', 'insurance-sheet', 'installment-sheet');
+  sheet.classList.add('credit-info-sheet');
+  document.getElementById('sheet-hd-title').textContent = opcao.nome;
+  document.getElementById('sheet-body').innerHTML = `
+    <div class="credit-info-content">
+      <h2>${opcao.titulo}</h2>
+      ${opcao.itens.map(([titulo,descricao])=>`<div class="credit-info-row"><strong>${titulo}</strong><span>${descricao}</span></div>`).join('')}
+    </div>`;
+  document.getElementById('sheet-body').scrollTop=0;
+  sheet.classList.add('on');
+}
+
+function abrirSheet(k){
+  const p=S[k], d=D(k);
+  const vencimento = k === 'ct' ? 'No dia do pagamento' : '1 de outubro';
+  const meioPagamento = k === 'ct' ? 'Folha de pagamento' : 'Pagamento via Pix';
+  const empresa = k === 'ct' ? `
+    <div class="row sheet-detail-row"><div class="left">Pagamento<small>Desconto direto no salário</small></div><div class="right">Acme Corporation</div></div>` : '';
+  const seguro = p.seg ? `
+    <div class="row sheet-detail-row"><div class="left">Parcela Segura<small>Incluso nas parcelas</small></div><div class="right">${p.n}x de ${brl(CFG.seguro)}</div></div>` : '';
+
+  document.getElementById('sheet').classList.add('detail-sheet');
+  document.getElementById('sheet-hd-title').textContent = '';
+  document.getElementById('sheet-body').innerHTML = `
+    <div class="sheet-detail">
+      <h3>${d.nome}</h3>
+      <div class="row sheet-detail-row"><div class="left">Valor solicitado</div><div class="right">${brl0(p.valor)}</div></div>
+      <div class="row sheet-detail-row"><div class="left">Parcelas<small>${meioPagamento}</small></div><div class="right">${p.n}x de ${brl(d.val)}</div></div>
+      ${seguro}
+      ${empresa}
+      <div class="row sheet-detail-row"><div class="left">Vencimento da 1ª parcela</div><div class="right">${vencimento}</div></div>
+      <div class="row sheet-detail-row no-line"><div class="left">Total a pagar</div><div class="right">${brl(d.total)}</div></div>
+      <div class="sheet-detail-section">ENCARGOS</div>
+      <div class="row sheet-detail-row"><div class="left">IOF</div><div class="right">${brl(d.iof)}</div></div>
+      ${d.tac > 0 ? `<div class="row sheet-detail-row"><div class="left">Tarifa de cadastro</div><div class="right">${brl(d.tac)}</div></div>` : ''}
+      <div class="row sheet-detail-row"><div class="left">Juros mensal</div><div class="right">${pct(d.taxa)}</div></div>
+      <div class="row sheet-detail-row no-line"><div class="left">CET anual</div><div class="right">${pct(d.cet / 100)}</div></div>
+    </div>`;
+  document.getElementById('sheet').classList.add('on');
+}
+
+function fecharSheet(){
+  document.getElementById('sheet').classList.remove('on', 'detail-sheet', 'insurance-sheet', 'installment-sheet', 'credit-info-sheet');
+}
+
+function abrirSeguro(){
+  const sheet = document.getElementById('sheet');
+  const rows = [
+    ['<svg class="insurance-house-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.167 1.87402C14.7746 1.87412 15.3574 2.11622 15.7871 2.5459C16.2167 2.97564 16.458 3.55837 16.458 4.16602V16.874H17.5C17.8451 16.874 18.125 17.1539 18.125 17.499C18.125 17.8442 17.8452 18.124 17.5 18.124H2.5C2.15482 18.124 1.875 17.8442 1.875 17.499C1.87504 17.1539 2.15485 16.874 2.5 16.874H3.54199V4.16602C3.54199 3.55835 3.78328 2.97564 4.21289 2.5459C4.6426 2.11619 5.22532 1.8741 5.83301 1.87402H14.167ZM5.83301 3.12402C5.55684 3.1241 5.29196 3.2344 5.09668 3.42969C4.90149 3.62501 4.79199 3.88987 4.79199 4.16602V16.874H6.875V14.166C6.875 13.5584 7.11639 12.9756 7.5459 12.5459C7.97567 12.1161 8.5592 11.874 9.16699 11.874H10.833C11.4408 11.874 12.0234 12.1163 12.4531 12.5459C12.8829 12.9757 13.125 13.5582 13.125 14.166V16.874H15.208V4.16602C15.208 3.88989 15.0985 3.62501 14.9033 3.42969C14.7081 3.23443 14.4431 3.12412 14.167 3.12402H5.83301ZM9.16699 13.124C8.89073 13.124 8.62504 13.2343 8.42969 13.4297C8.2346 13.625 8.125 13.8899 8.125 14.166V16.874H11.875V14.166C11.875 13.8897 11.7647 13.625 11.5693 13.4297C11.374 13.2343 11.1093 13.124 10.833 13.124H9.16699ZM10 5.20703C10.345 5.20706 10.6248 5.48706 10.625 5.83203V6.87402H11.667C12.012 6.87422 12.2919 7.15401 12.292 7.49902C12.292 7.84408 12.012 8.12382 11.667 8.12402H10.625V9.16602C10.6249 9.51107 10.3451 9.79099 10 9.79102C9.6549 9.79102 9.37513 9.51108 9.375 9.16602V8.12402H8.33301C7.98796 8.12387 7.70801 7.84411 7.70801 7.49902C7.70805 7.15398 7.98798 6.87417 8.33301 6.87402H9.375V5.83203C9.37522 5.48704 9.65496 5.20703 10 5.20703Z" fill="#262423"/></svg>', 'Falecimento', 'Indenização até R$50 mil'],
+    ['<svg class="insurance-solid-icon black-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.41611 3.41953C5.54263 1.29068 7.88865 1.26093 10.0245 3.32676L10.9884 4.29062C10.9919 4.29413 10.9969 4.29658 11.0011 4.29844L11.005 4.29941L15.5685 8.86582C15.5708 8.87043 15.573 8.87521 15.5753 8.87754L16.6329 9.93516C16.6865 9.98646 16.7382 10.0378 16.7872 10.0914C18.7384 12.1735 18.6704 14.4816 16.5743 16.5777C15.4959 17.6562 14.3685 18.2027 13.2247 18.2027H13.1622C12.0371 18.1841 10.9327 17.6373 9.87998 16.5846L9.75205 16.4615L9.71201 16.4234C9.62262 16.3363 9.53449 16.2502 9.45712 16.1627L8.88779 15.5934C8.88385 15.5904 8.87933 15.587 8.87509 15.5846C8.86944 15.5813 8.86341 15.5787 8.85947 15.5748L4.29599 11.0084C4.29178 11.0041 4.28959 10.9987 4.2872 10.9937C4.28574 10.9907 4.28406 10.9876 4.28232 10.985L3.81064 10.5133C3.73136 10.4479 3.63568 10.3479 3.54013 10.2477L3.41611 10.1187C2.36124 9.06376 1.817 7.95957 1.79599 6.83457C1.77507 5.6652 2.3191 4.51655 3.41611 3.41953ZM9.94541 15.2057L10.2042 15.4645C10.2976 15.5695 10.3748 15.6446 10.4542 15.7193L10.5987 15.859C11.4599 16.7202 12.326 17.1642 13.1778 17.1783C14.0344 17.1877 14.9591 16.7508 15.8507 15.857C17.5664 14.1413 17.6225 12.4788 16.0235 10.7701C15.9949 10.7364 15.9722 10.7149 15.9522 10.6959C15.9448 10.6888 15.9377 10.6814 15.9308 10.6744L15.8585 10.6051L15.2022 9.94883L9.94541 15.2057ZM5.38193 10.6441L9.22373 14.4869L14.4786 9.22715L10.6358 5.38535L5.38193 10.6441ZM9.12802 11.9371C9.33105 11.7341 9.66067 11.7342 9.86142 11.9371C10.0645 12.1402 10.0645 12.4674 9.86142 12.6705C9.65834 12.8736 9.3311 12.8736 9.12802 12.6705C8.92743 12.4697 8.92733 12.1401 9.12802 11.9371ZM7.26767 10.0582C7.47074 9.85513 7.79799 9.85516 8.00107 10.0582C8.20415 10.2613 8.20415 10.5885 8.00107 10.7916C7.79799 10.9947 7.47075 10.9947 7.26767 10.7916C7.06463 10.5885 7.06462 10.2613 7.26767 10.0582ZM9.58798 9.56602C9.79106 9.36293 10.1183 9.36293 10.3214 9.56602C10.5242 9.769 10.5241 10.0954 10.3214 10.2984C10.1183 10.5015 9.79106 10.5015 9.58798 10.2984C9.38762 10.0977 9.38751 9.769 9.58798 9.56602ZM12.0186 9.05039C12.2217 8.84737 12.548 8.84733 12.7511 9.05039C12.954 9.25346 12.954 9.57977 12.7511 9.78281C12.548 9.98585 12.2217 9.98575 12.0186 9.78281C11.8156 9.57973 11.8156 9.25114 12.0186 9.05039ZM6.76572 2.8082C5.89285 2.80832 5.02232 3.25182 4.13779 4.13633C2.36841 5.9057 2.36841 7.62379 4.13779 9.39316L4.27744 9.5377C4.35209 9.61935 4.42469 9.69659 4.504 9.76426L4.66025 9.92051L9.91709 4.66172L9.30576 4.05039C8.45142 3.22406 7.60839 2.8082 6.76572 2.8082ZM10.1573 7.16855C10.3604 6.96549 10.6876 6.96551 10.8907 7.16855C11.0938 7.37164 11.0938 7.69887 10.8907 7.90195C10.6876 8.10484 10.358 8.10497 10.1573 7.90195C9.95434 7.70126 9.95444 7.37164 10.1573 7.16855Z" fill="black"/></svg>', 'Incapacidade por acidente', 'Indenização até R$50 mil'],
+    ['<svg class="insurance-solid-icon black-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5 8.5411C13.9568 8.5411 15.3068 8.83463 16.3154 9.33895C17.2668 9.81469 18.0889 10.5793 18.1221 11.6016C18.1242 11.6227 18.125 11.6445 18.125 11.6661V14.9991C18.1249 16.0531 17.2863 16.8396 16.3154 17.3253C15.3068 17.8296 13.9568 18.1241 12.5 18.1241C11.0432 18.1241 9.69315 17.8296 8.68457 17.3253C7.71367 16.8396 6.8751 16.0531 6.875 14.9991V11.6661C6.875 11.6446 6.87723 11.6229 6.87793 11.6016C6.91114 10.5793 7.73322 9.8147 8.68457 9.33895C9.6932 8.83463 11.0432 8.5411 12.5 8.5411ZM16.875 13.6641C16.6973 13.7848 16.5093 13.8953 16.3154 13.9923C15.3068 14.4966 13.9568 14.7911 12.5 14.7911C11.0432 14.7911 9.69319 14.4966 8.68457 13.9923C8.49066 13.8953 8.30272 13.7848 8.125 13.6641V14.9991C8.1251 15.3248 8.4059 15.7879 9.24414 16.2071C10.0451 16.6077 11.1953 16.8741 12.5 16.8741C13.8047 16.8741 14.9549 16.6077 15.7559 16.2071C16.5941 15.7879 16.8749 15.3248 16.875 14.9991V13.6641ZM4.82617 2.23348C6.48594 1.75415 8.513 1.75426 10.1729 2.23348C11.0047 2.47371 11.7192 2.82717 12.2383 3.27645C12.7571 3.72569 13.125 4.31414 13.125 4.9991C13.1249 5.68403 12.7571 6.27255 12.2383 6.72176C11.7192 7.171 11.0046 7.52451 10.1729 7.76473C8.51303 8.24393 6.48592 8.24404 4.82617 7.76473C4.17389 7.57632 3.59527 7.31625 3.125 6.99715V9.1661C3.12512 9.32296 3.1822 9.46825 3.37402 9.64559C3.58555 9.84098 3.92551 10.0395 4.42188 10.2618C4.73682 10.4029 4.87835 10.773 4.7373 11.088C4.59617 11.4029 4.22609 11.5434 3.91113 11.4024C3.63539 11.2789 3.36901 11.1469 3.125 11.0011V13.3321C3.12504 13.4891 3.18194 13.635 3.37402 13.8126C3.58557 14.008 3.92545 14.2064 4.42188 14.4288C4.73684 14.5699 4.87839 14.94 4.7373 15.255C4.59609 15.5697 4.22602 15.7104 3.91113 15.5694C3.38468 15.3336 2.8913 15.0687 2.52539 14.7305C2.14008 14.3744 1.87505 13.9149 1.875 13.3321V4.9991C1.875 4.3143 2.24211 3.72565 2.76074 3.27645C3.27979 2.82716 3.99441 2.47373 4.82617 2.23348ZM12.5 9.7911C11.1952 9.7911 10.0451 10.0567 9.24414 10.4571C8.40593 10.8762 8.125 11.3399 8.125 11.6661C8.12529 11.9922 8.40631 12.4552 9.24414 12.8741C10.0451 13.2745 11.1952 13.5411 12.5 13.5411C13.8048 13.5411 14.9549 13.2745 15.7559 12.8741C16.5937 12.4552 16.8747 11.9922 16.875 11.6661C16.875 11.3399 16.5941 10.8762 15.7559 10.4571C14.9549 10.0567 13.8048 9.7911 12.5 9.7911ZM9.82617 3.43367C8.39292 3.01991 6.60601 3.0198 5.17285 3.43367C4.45855 3.64 3.92322 3.92384 3.5791 4.22176C3.23483 4.51992 3.125 4.79082 3.125 4.9991C3.12506 5.20738 3.23487 5.47834 3.5791 5.77645C3.92319 6.07431 4.45872 6.35725 5.17285 6.56356C6.60607 6.97744 8.3929 6.97738 9.82617 6.56356C10.5406 6.35724 11.0767 6.07439 11.4209 5.77645C11.7651 5.47834 11.8749 5.20738 11.875 4.9991C11.875 4.79082 11.7652 4.51992 11.4209 4.22176C11.0767 3.9238 10.5406 3.64001 9.82617 3.43367Z" fill="black"/></svg>', 'Perda de rendaa', 'Indenização até 4 parcelas de R$ 1.400'],
+    ['<svg class="insurance-solid-icon dark-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0055 1.99609C12.6625 1.99609 14.0057 3.33935 14.0057 4.99635V6.99261C14.0057 7.32401 13.7371 7.59267 13.4057 7.59267C13.0743 7.59267 12.8056 7.32401 12.8056 6.99261V4.99635C12.8056 4.00215 11.9997 3.1962 11.0055 3.1962H7.78799V5.13933C7.788 6.79632 6.44473 8.13958 4.78774 8.13959H3.2001V15.0027C3.2001 15.9969 4.00606 16.8028 5.00026 16.8028H7.00043C7.3318 16.8028 7.60044 17.0715 7.60048 17.4029C7.60048 17.7343 7.33183 18.0029 7.00043 18.0029H5.00026C3.39512 18.0029 2.08438 16.7425 2.00391 15.1574L2 15.0027V7.53954C2.00002 7.38824 2.05729 7.24262 2.16017 7.13169L6.74806 2.1883C6.84736 2.0813 6.98164 2.01424 7.12544 1.99922L7.18794 1.99609H11.0055ZM13.801 8.3982C16.1208 8.3982 18.0014 10.2788 18.0014 12.5986V13.7987C18.0014 16.1185 16.1208 17.999 13.801 17.999H12.6009C10.2811 17.999 8.40055 16.1185 8.40055 13.7987V12.5986C8.40055 10.2788 10.2811 8.3982 12.6009 8.3982H13.801ZM12.6009 9.59831C10.9439 9.59831 9.60065 10.9416 9.60065 12.5986V13.7987C9.60065 15.4557 10.9439 16.7989 12.6009 16.7989H13.801C15.458 16.7989 16.8013 15.4557 16.8013 13.7987V12.5986C16.8013 10.9416 15.458 9.59831 13.801 9.59831H12.6009ZM13.2166 10.3984C13.5242 10.3987 13.7775 10.6305 13.8119 10.9289C13.8175 10.9306 13.8236 10.9318 13.8291 10.9336C14.1224 11.0283 14.3953 11.1955 14.5987 11.4328C14.814 11.6844 14.7852 12.0634 14.5339 12.279C14.2823 12.4946 13.9034 12.4648 13.6877 12.2134C13.6473 12.1662 13.5725 12.1113 13.4604 12.0751C13.3489 12.0391 13.2202 12.0284 13.0955 12.0477C12.9703 12.0672 12.8703 12.1134 12.804 12.1649C12.7388 12.2158 12.7182 12.2619 12.7126 12.2837C12.7082 12.3014 12.7081 12.3225 12.7244 12.3532C12.7433 12.3888 12.7893 12.4439 12.8806 12.4915C12.9724 12.5393 13.0721 12.5628 13.3142 12.6095H13.3158L13.4861 12.6431C13.666 12.6808 13.8723 12.735 14.0768 12.8416C14.3502 12.9841 14.5888 13.2001 14.7378 13.4807C14.8892 13.7657 14.9337 14.0927 14.8527 14.4104C14.7726 14.7243 14.5812 14.9874 14.3362 15.1785C14.1796 15.3005 14.0014 15.3926 13.8135 15.4558C13.7848 15.7603 13.5285 15.9986 13.2166 15.9989C12.912 15.9989 12.6607 15.7718 12.622 15.4777C12.606 15.473 12.5895 15.4688 12.5736 15.4637C12.2803 15.3689 12.0074 15.2017 11.804 14.9644C11.5885 14.7128 11.618 14.3338 11.8696 14.1182C12.1212 13.9031 12.4995 13.9325 12.715 14.1839C12.7555 14.231 12.8302 14.2859 12.9423 14.3221C13.0539 14.3581 13.1825 14.3688 13.3072 14.3495C13.4324 14.33 13.5325 14.2839 13.5986 14.2323C13.6638 14.1814 13.6845 14.1353 13.6901 14.1135C13.6945 14.0958 13.6945 14.0746 13.6783 14.044C13.6595 14.0085 13.6134 13.9533 13.5221 13.9057C13.4303 13.8579 13.3306 13.8345 13.0884 13.7877H13.0869C12.874 13.7467 12.5992 13.6975 12.3267 13.5557C12.0531 13.4132 11.814 13.1972 11.6649 12.9166C11.5134 12.6314 11.469 12.3046 11.55 11.9868C11.6302 11.6728 11.8214 11.4098 12.0665 11.2188C12.2317 11.09 12.421 10.9945 12.6204 10.9312C12.6539 10.6315 12.9079 10.3984 13.2166 10.3984ZM7.00043 14.251C7.33183 14.251 7.60048 14.5197 7.60048 14.8511C7.60048 15.1825 7.33183 15.4511 7.00043 15.4511H5.2409C4.9095 15.4511 4.64085 15.1825 4.64085 14.8511C4.64085 14.5197 4.9095 14.251 5.2409 14.251H7.00043ZM7.00043 11.8508C7.33183 11.8508 7.60048 12.1195 7.60048 12.4509C7.60048 12.7823 7.33183 13.0509 7.00043 13.0509H5.2409C4.9095 13.0509 4.64085 12.7823 4.64085 12.4509C4.64085 12.1195 4.9095 11.8508 5.2409 11.8508H7.00043ZM7.00043 9.45064C7.33183 9.45064 7.60048 9.71929 7.60048 10.0507C7.60048 10.3821 7.33183 10.6507 7.00043 10.6507H5.2409C4.9095 10.6507 4.64085 10.3821 4.64085 10.0507C4.64085 9.71929 4.9095 9.45064 5.2409 9.45064H7.00043ZM3.97595 6.93948H4.78774C5.78193 6.93948 6.58789 6.13353 6.58789 5.13933V4.12518L3.97595 6.93948Z" fill="#0E0C14"/></svg>', 'Pagamento da indenização', 'Quita parcial ou totalmente as parcelas, conforme os limites da apólice'],
+    ['<svg class="insurance-solid-icon black-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.41611 3.41953C5.54263 1.29068 7.88865 1.26093 10.0245 3.32676L10.9884 4.29062C10.9919 4.29413 10.9969 4.29658 11.0011 4.29844L11.005 4.29941L15.5685 8.86582C15.5708 8.87043 15.573 8.87521 15.5753 8.87754L16.6329 9.93516C16.6865 9.98646 16.7382 10.0378 16.7872 10.0914C18.7384 12.1735 18.6704 14.4816 16.5743 16.5777C15.4959 17.6562 14.3685 18.2027 13.2247 18.2027H13.1622C12.0371 18.1841 10.9327 17.6373 9.87998 16.5846L9.75205 16.4615L9.71201 16.4234C9.62262 16.3363 9.53449 16.2502 9.45712 16.1627L8.88779 15.5934C8.88385 15.5904 8.87933 15.587 8.87509 15.5846C8.86944 15.5813 8.86341 15.5787 8.85947 15.5748L4.29599 11.0084C4.29178 11.0041 4.28959 10.9987 4.2872 10.9937C4.28574 10.9907 4.28406 10.9876 4.28232 10.985L3.81064 10.5133C3.73136 10.4479 3.63568 10.3479 3.54013 10.2477L3.41611 10.1187C2.36124 9.06376 1.817 7.95957 1.79599 6.83457C1.77507 5.6652 2.3191 4.51655 3.41611 3.41953ZM9.94541 15.2057L10.2042 15.4645C10.2976 15.5695 10.3748 15.6446 10.4542 15.7193L10.5987 15.859C11.4599 16.7202 12.326 17.1642 13.1778 17.1783C14.0344 17.1877 14.9591 16.7508 15.8507 15.857C17.5664 14.1413 17.6225 12.4788 16.0235 10.7701C15.9949 10.7364 15.9722 10.7149 15.9522 10.6959C15.9448 10.6888 15.9377 10.6814 15.9308 10.6744L15.8585 10.6051L15.2022 9.94883L9.94541 15.2057ZM5.38193 10.6441L9.22373 14.4869L14.4786 9.22715L10.6358 5.38535L5.38193 10.6441ZM9.12802 11.9371C9.33105 11.7341 9.66067 11.7342 9.86142 11.9371C10.0645 12.1402 10.0645 12.4674 9.86142 12.6705C9.65834 12.8736 9.3311 12.8736 9.12802 12.6705C8.92743 12.4697 8.92733 12.1401 9.12802 11.9371ZM7.26767 10.0582C7.47074 9.85513 7.79799 9.85516 8.00107 10.0582C8.20415 10.2613 8.20415 10.5885 8.00107 10.7916C7.79799 10.9947 7.47075 10.9947 7.26767 10.7916C7.06463 10.5885 7.06462 10.2613 7.26767 10.0582ZM9.58798 9.56602C9.79106 9.36293 10.1183 9.36293 10.3214 9.56602C10.5242 9.769 10.5241 10.0954 10.3214 10.2984C10.1183 10.5015 9.79106 10.5015 9.58798 10.2984C9.38762 10.0977 9.38751 9.769 9.58798 9.56602ZM12.0186 9.05039C12.2217 8.84737 12.548 8.84733 12.7511 9.05039C12.954 9.25346 12.954 9.57977 12.7511 9.78281C12.548 9.98585 12.2217 9.98575 12.0186 9.78281C11.8156 9.57973 11.8156 9.25114 12.0186 9.05039ZM6.76572 2.8082C5.89285 2.80832 5.02232 3.25182 4.13779 4.13633C2.36841 5.9057 2.36841 7.62379 4.13779 9.39316L4.27744 9.5377C4.35209 9.61935 4.42469 9.69659 4.504 9.76426L4.66025 9.92051L9.91709 4.66172L9.30576 4.05039C8.45142 3.22406 7.60839 2.8082 6.76572 2.8082ZM10.1573 7.16855C10.3604 6.96549 10.6876 6.96551 10.8907 7.16855C11.0938 7.37164 11.0938 7.69887 10.8907 7.90195C10.6876 8.10484 10.358 8.10497 10.1573 7.90195C9.95434 7.70126 9.95444 7.37164 10.1573 7.16855Z" fill="black"/></svg>', 'Desemprego involuntário', 'Apoio em caso de demissão sem justa causa, conforme as condições do seguro.'],
+    ['<svg class="insurance-solid-icon black-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5 8.5411C13.9568 8.5411 15.3068 8.83463 16.3154 9.33895C17.2668 9.81469 18.0889 10.5793 18.1221 11.6016C18.1242 11.6227 18.125 11.6445 18.125 11.6661V14.9991C18.1249 16.0531 17.2863 16.8396 16.3154 17.3253C15.3068 17.8296 13.9568 18.1241 12.5 18.1241C11.0432 18.1241 9.69315 17.8296 8.68457 17.3253C7.71367 16.8396 6.8751 16.0531 6.875 14.9991V11.6661C6.875 11.6446 6.87723 11.6229 6.87793 11.6016C6.91114 10.5793 7.73322 9.8147 8.68457 9.33895C9.6932 8.83463 11.0432 8.5411 12.5 8.5411ZM16.875 13.6641C16.6973 13.7848 16.5093 13.8953 16.3154 13.9923C15.3068 14.4966 13.9568 14.7911 12.5 14.7911C11.0432 14.7911 9.69319 14.4966 8.68457 13.9923C8.49066 13.8953 8.30272 13.7848 8.125 13.6641V14.9991C8.1251 15.3248 8.4059 15.7879 9.24414 16.2071C10.0451 16.6077 11.1953 16.8741 12.5 16.8741C13.8047 16.8741 14.9549 16.6077 15.7559 16.2071C16.5941 15.7879 16.8749 15.3248 16.875 14.9991V13.6641ZM4.82617 2.23348C6.48594 1.75415 8.513 1.75426 10.1729 2.23348C11.0047 2.47371 11.7192 2.82717 12.2383 3.27645C12.7571 3.72569 13.125 4.31414 13.125 4.9991C13.1249 5.68403 12.7571 6.27255 12.2383 6.72176C11.7192 7.171 11.0046 7.52451 10.1729 7.76473C8.51303 8.24393 6.48592 8.24404 4.82617 7.76473C4.17389 7.57632 3.59527 7.31625 3.125 6.99715V9.1661C3.12512 9.32296 3.1822 9.46825 3.37402 9.64559C3.58555 9.84098 3.92551 10.0395 4.42188 10.2618C4.73682 10.4029 4.87835 10.773 4.7373 11.088C4.59617 11.4029 4.22609 11.5434 3.91113 11.4024C3.63539 11.2789 3.36901 11.1469 3.125 11.0011V13.3321C3.12504 13.4891 3.18194 13.635 3.37402 13.8126C3.58557 14.008 3.92545 14.2064 4.42188 14.4288C4.73684 14.5699 4.87839 14.94 4.7373 15.255C4.59609 15.5697 4.22602 15.7104 3.91113 15.5694C3.38468 15.3336 2.8913 15.0687 2.52539 14.7305C2.14008 14.3744 1.87505 13.9149 1.875 13.3321V4.9991C1.875 4.3143 2.24211 3.72565 2.76074 3.27645C3.27979 2.82716 3.99441 2.47373 4.82617 2.23348ZM12.5 9.7911C11.1952 9.7911 10.0451 10.0567 9.24414 10.4571C8.40593 10.8762 8.125 11.3399 8.125 11.6661C8.12529 11.9922 8.40631 12.4552 9.24414 12.8741C10.0451 13.2745 11.1952 13.5411 12.5 13.5411C13.8048 13.5411 14.9549 13.2745 15.7559 12.8741C16.5937 12.4552 16.8747 11.9922 16.875 11.6661C16.875 11.3399 16.5941 10.8762 15.7559 10.4571C14.9549 10.0567 13.8048 9.7911 12.5 9.7911ZM9.82617 3.43367C8.39292 3.01991 6.60601 3.0198 5.17285 3.43367C4.45855 3.64 3.92322 3.92384 3.5791 4.22176C3.23483 4.51992 3.125 4.79082 3.125 4.9991C3.12506 5.20738 3.23487 5.47834 3.5791 5.77645C3.92319 6.07431 4.45872 6.35725 5.17285 6.56356C6.60607 6.97744 8.3929 6.97738 9.82617 6.56356C10.5406 6.35724 11.0767 6.07439 11.4209 5.77645C11.7651 5.47834 11.8749 5.20738 11.875 4.9991C11.875 4.79082 11.7652 4.51992 11.4209 4.22176C11.0767 3.9238 10.5406 3.64001 9.82617 3.43367Z" fill="black"/></svg>', 'Incapacidade física temporária', 'Cobertura em situações previstas nas condições gerais do seguro.'],
+    ['<svg class="insurance-solid-icon dark-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0055 1.99609C12.6625 1.99609 14.0057 3.33935 14.0057 4.99635V6.99261C14.0057 7.32401 13.7371 7.59267 13.4057 7.59267C13.0743 7.59267 12.8056 7.32401 12.8056 6.99261V4.99635C12.8056 4.00215 11.9997 3.1962 11.0055 3.1962H7.78799V5.13933C7.788 6.79632 6.44473 8.13958 4.78774 8.13959H3.2001V15.0027C3.2001 15.9969 4.00606 16.8028 5.00026 16.8028H7.00043C7.3318 16.8028 7.60044 17.0715 7.60048 17.4029C7.60048 17.7343 7.33183 18.0029 7.00043 18.0029H5.00026C3.39512 18.0029 2.08438 16.7425 2.00391 15.1574L2 15.0027V7.53954C2.00002 7.38824 2.05729 7.24262 2.16017 7.13169L6.74806 2.1883C6.84736 2.0813 6.98164 2.01424 7.12544 1.99922L7.18794 1.99609H11.0055ZM13.801 8.3982C16.1208 8.3982 18.0014 10.2788 18.0014 12.5986V13.7987C18.0014 16.1185 16.1208 17.999 13.801 17.999H12.6009C10.2811 17.999 8.40055 16.1185 8.40055 13.7987V12.5986C8.40055 10.2788 10.2811 8.3982 12.6009 8.3982H13.801ZM12.6009 9.59831C10.9439 9.59831 9.60065 10.9416 9.60065 12.5986V13.7987C9.60065 15.4557 10.9439 16.7989 12.6009 16.7989H13.801C15.458 16.7989 16.8013 15.4557 16.8013 13.7987V12.5986C16.8013 10.9416 15.458 9.59831 13.801 9.59831H12.6009ZM13.2166 10.3984C13.5242 10.3987 13.7775 10.6305 13.8119 10.9289C13.8175 10.9306 13.8236 10.9318 13.8291 10.9336C14.1224 11.0283 14.3953 11.1955 14.5987 11.4328C14.814 11.6844 14.7852 12.0634 14.5339 12.279C14.2823 12.4946 13.9034 12.4648 13.6877 12.2134C13.6473 12.1662 13.5725 12.1113 13.4604 12.0751C13.3489 12.0391 13.2202 12.0284 13.0955 12.0477C12.9703 12.0672 12.8703 12.1134 12.804 12.1649C12.7388 12.2158 12.7182 12.2619 12.7126 12.2837C12.7082 12.3014 12.7081 12.3225 12.7244 12.3532C12.7433 12.3888 12.7893 12.4439 12.8806 12.4915C12.9724 12.5393 13.0721 12.5628 13.3142 12.6095H13.3158L13.4861 12.6431C13.666 12.6808 13.8723 12.735 14.0768 12.8416C14.3502 12.9841 14.5888 13.2001 14.7378 13.4807C14.8892 13.7657 14.9337 14.0927 14.8527 14.4104C14.7726 14.7243 14.5812 14.9874 14.3362 15.1785C14.1796 15.3005 14.0014 15.3926 13.8135 15.4558C13.7848 15.7603 13.5285 15.9986 13.2166 15.9989C12.912 15.9989 12.6607 15.7718 12.622 15.4777C12.606 15.473 12.5895 15.4688 12.5736 15.4637C12.2803 15.3689 12.0074 15.2017 11.804 14.9644C11.5885 14.7128 11.618 14.3338 11.8696 14.1182C12.1212 13.9031 12.4995 13.9325 12.715 14.1839C12.7555 14.231 12.8302 14.2859 12.9423 14.3221C13.0539 14.3581 13.1825 14.3688 13.3072 14.3495C13.4324 14.33 13.5325 14.2839 13.5986 14.2323C13.6638 14.1814 13.6845 14.1353 13.6901 14.1135C13.6945 14.0958 13.6945 14.0746 13.6783 14.044C13.6595 14.0085 13.6134 13.9533 13.5221 13.9057C13.4303 13.8579 13.3306 13.8345 13.0884 13.7877H13.0869C12.874 13.7467 12.5992 13.6975 12.3267 13.5557C12.0531 13.4132 11.814 13.1972 11.6649 12.9166C11.5134 12.6314 11.469 12.3046 11.55 11.9868C11.6302 11.6728 11.8214 11.4098 12.0665 11.2188C12.2317 11.09 12.421 10.9945 12.6204 10.9312C12.6539 10.6315 12.9079 10.3984 13.2166 10.3984ZM7.00043 14.251C7.33183 14.251 7.60048 14.5197 7.60048 14.8511C7.60048 15.1825 7.33183 15.4511 7.00043 15.4511H5.2409C4.9095 15.4511 4.64085 15.1825 4.64085 14.8511C4.64085 14.5197 4.9095 14.251 5.2409 14.251H7.00043ZM7.00043 11.8508C7.33183 11.8508 7.60048 12.1195 7.60048 12.4509C7.60048 12.7823 7.33183 13.0509 7.00043 13.0509H5.2409C4.9095 13.0509 4.64085 12.7823 4.64085 12.4509C4.64085 12.1195 4.9095 11.8508 5.2409 11.8508H7.00043ZM7.00043 9.45064C7.33183 9.45064 7.60048 9.71929 7.60048 10.0507C7.60048 10.3821 7.33183 10.6507 7.00043 10.6507H5.2409C4.9095 10.6507 4.64085 10.3821 4.64085 10.0507C4.64085 9.71929 4.9095 9.45064 5.2409 9.45064H7.00043ZM3.97595 6.93948H4.78774C5.78193 6.93948 6.58789 6.13353 6.58789 5.13933V4.12518L3.97595 6.93948Z" fill="#0E0C14"/></svg>', 'Contratação junto com o empréstimo', 'Você pode incluir o Parcela Segura ao contratar seu empréstimo.'],
+    ['<svg class="insurance-solid-icon black-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5015 2.00098C15.1581 2.00098 16.5015 3.34366 16.5015 5.00012V14.9991C16.5015 16.6559 15.1584 17.999 13.5015 17.999H7.497L7.34231 17.9951C5.80869 17.9172 4.57866 16.6881 4.50098 15.1546L4.49707 15.0007V7.54147C4.4971 7.39019 4.55436 7.24458 4.65722 7.13366L9.24461 2.19316C9.34389 2.08623 9.47821 2.01912 9.62195 2.0041L9.68444 2.00098H13.5015ZM10.2844 3.20095V5.14309C10.2843 6.7994 8.94094 8.14145 7.2845 8.14145H5.69704V15.0007C5.69719 15.9937 6.50273 16.7991 7.497 16.7991H13.5015C14.4956 16.7991 15.3015 15.9932 15.3015 14.9991V5.00012C15.3015 4.00692 14.4959 3.20095 13.5015 3.20095H10.2844ZM13.257 14.2546C13.5884 14.2546 13.857 14.5232 13.857 14.8546C13.857 15.1859 13.5884 15.4546 13.257 15.4546H7.74074L7.67981 15.4514C7.37734 15.4206 7.14076 15.1652 7.14076 14.8546C7.14076 14.544 7.37734 14.2885 7.67981 14.2577L7.74074 14.2546H13.257ZM13.257 11.8546C13.5884 11.8546 13.857 12.1233 13.857 12.4546C13.857 12.786 13.5884 13.0546 13.257 13.0546H7.74074L7.67981 13.0515C7.37734 13.0207 7.14076 12.7652 7.14076 12.4546C7.14076 12.144 7.37734 11.8886 7.67981 11.8578L7.74074 11.8546H13.257ZM13.257 9.4547C13.5884 9.4547 13.857 9.72332 13.857 10.0547C13.857 10.386 13.5884 10.6547 13.257 10.6547H7.74074L7.67981 10.6515C7.37734 10.6207 7.14076 10.3653 7.14076 10.0547C7.14076 9.74409 7.37734 9.48863 7.67981 9.45783L7.74074 9.4547H13.257ZM6.47358 6.94148H7.2845C8.27875 6.94148 9.08429 6.13614 9.08446 5.14309V4.12905L6.47358 6.94148Z" fill="#0E0C14"/></svg>', 'Contratação ', 'Opcional no momento da solicitação'],
+  ];
+  rows[4] = ['<svg class="insurance-solid-icon black-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.142 2.139C14.2912 2.13434 14.4196 2.1789 14.5199 2.2767C14.6226 2.37474 14.6791 2.51088 14.6791 2.6556V3.81771C15.2532 3.94849 15.6664 4.44616 15.6664 5.04135V6.24349C15.9511 6.35087 16.203 6.51181 16.4037 6.72885C16.7748 7.13499 16.953 7.6856 16.9203 8.32748L16.9222 9.55111H17.0082C17.6663 9.55111 18.2013 10.099 18.2015 10.7757V13.1829C18.2015 13.8575 17.6641 14.4085 17.0082 14.4085H16.9359L16.9388 15.7415C16.9388 16.3063 16.726 16.8386 16.3363 17.2376C15.9465 17.6391 15.4282 17.8587 14.8773 17.8587L3.85682 17.8607C3.23608 17.8559 2.68979 17.6271 2.31873 17.221C1.94767 16.8149 1.76848 16.266 1.80115 15.6312V4.98275C1.80115 4.41803 2.01544 3.88578 2.40271 3.48666C2.79248 3.08522 3.3109 2.86563 3.8617 2.86557L14.142 2.139ZM2.80701 15.6615C2.78834 16.0349 2.87239 16.3222 3.05213 16.516C3.23416 16.7167 3.521 16.8261 3.8617 16.8285L14.8773 16.8265C15.1598 16.8265 15.424 16.7145 15.6224 16.5091C15.8206 16.3038 15.93 16.0307 15.9301 15.7415L15.9281 14.4085H10.3676C9.11182 14.4085 8.08745 13.358 8.08728 12.0697V11.8919C8.08729 10.6011 9.10939 9.55307 10.3676 9.55307H15.9164L15.9135 8.30404C15.9321 7.9238 15.8485 7.63681 15.6713 7.44076C15.4915 7.24235 15.2158 7.13743 14.8773 7.1351L3.8617 7.13705V7.13021C3.48373 7.13017 3.12434 7.01816 2.80701 6.82455V15.6615ZM10.3676 10.5843C9.66494 10.5843 9.0951 11.171 9.0951 11.89V12.0667C9.0951 12.7857 9.66728 13.3714 10.3676 13.3714H17.0082C17.1108 13.3738 17.1956 13.2879 17.1957 13.1829V10.7757C17.1955 10.6686 17.1107 10.5843 17.0082 10.5843H10.3676ZM10.5267 11.2152C10.9746 11.2154 11.3382 11.5886 11.3383 12.0482C11.3383 12.5079 10.9747 12.8819 10.5267 12.8822C10.0786 12.8822 9.71619 12.508 9.71619 12.0482C9.71628 11.5884 10.0786 11.2152 10.5267 11.2152ZM14.1771 4.83334H14.1752L4.35193 5.53842C4.18398 5.54083 4.07459 5.64131 4.07459 5.76498V6.04721C4.07455 6.05692 4.07221 6.06679 4.06971 6.0765C4.06803 6.08303 4.06576 6.08951 4.06482 6.09603L14.6576 6.09799V5.0433C14.6576 4.91966 14.5483 4.81687 14.4154 4.81674L14.1771 4.83334ZM3.8949 3.89974C3.57978 3.90208 3.31304 4.01405 3.11463 4.21713C2.9164 4.42251 2.80701 4.69344 2.80701 4.98275V5.0101C2.80701 5.27368 2.90246 5.52367 3.07264 5.72201C3.09621 5.04773 3.64248 4.50442 4.31678 4.50424L13.6732 3.83139V3.21127L3.8949 3.89974Z" fill="black"/></svg>', 'Custo do seguro', '4,5% do valor do empréstimo. O valor do seguro é incluído nas parcelas'];
+  rows[5] = [rows[7][0].replace('black-icon', 'dark-icon'), 'Contratação ', 'Opcional no momento da solicitação do empréstimo'];
+  rows.length = 6;
+  const renderRows = items => items.map(([icon, title, description]) => `
+    <div class="insurance-row">
+      <span class="insurance-icon">${icon.startsWith('<svg') ? icon : `<svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg>`}</span>
+      <span><strong>${title}</strong><small>${description}</small></span>
+    </div>`).join('');
+
+  sheet.classList.remove('detail-sheet');
+  sheet.classList.add('insurance-sheet');
+  document.getElementById('sheet-hd-title').textContent = '';
+  document.getElementById('sheet-body').innerHTML = `
+    <div class="insurance-content">
+      <h2>Conheça o Parcela Segura</h2>
+      <p class="insurance-intro">Mantenha seu empréstimo em dia no caso de perda de renda, cobrindo até R$ 50 mil do empréstimo</p>
+      <h3 class="insurance-section-title">COBERTURAS</h3>
+      ${renderRows(rows.slice(0, 3))}
+      <h3 class="insurance-section-title">COMO FUNCIONA</h3>
+      ${renderRows(rows.slice(3))}
+    </div>`;
+  document.getElementById('sheet-body').scrollTop = 0;
+  sheet.classList.add('on');
+}
+
+/* ===================== 7. resumo da contratação ===================== */
+function continuarResumo() {
+    if(S.temConta) ir(8); 
+    else { fluxoAberturaConta = false; origemCadastro = 7; ir(6); }
+}
+
+function abrirConta(){
+  origemCadastro = 1;
+  fluxoAberturaConta = true;
+  ir(6);
+}
+
+function gerarResumoFinal() {
+    const at = ['ct', 'ep'].filter(k => S[k].on);
+    let totalLiberado = at.reduce((a, k) => a + S[k].valor, 0);
+    const parcelaInicial = at.reduce((a, k) => a + D(k).val, 0);
+    document.getElementById('resumo-titulo').textContent = 'Antes de solicitar, confira os detalhes';
+
+    const linhasReceber = at.map(k => {
+      const d = D(k);
+      return `<div class="row summary-row no-chevron">
+        <span><span class="name">${d.nome}</span></span>
+        <span class="amount">${brl0(S[k].valor)}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('resumo-final').innerHTML = `
+      <div class="summary-section-title">VOCÊ VAI RECEBER</div>
+      <div class="summary-list">
+        ${linhasReceber}
+        <div class="row summary-row no-chevron total-row receipt-row">
+          <span><span class="name">Total a receber</span><span class="sub">Conta Vivo Pay</span></span>
+          <span class="amount">${brl0(totalLiberado)}</span>
+        </div>
+      </div>`;
+
+    const linhasPagar = at.map(k => {
+      const p = S[k];
+      const d = D(k);
+      return `<button class="row summary-row pay-row" type="button" onclick="abrirSheet('${k}')">
+        <span><span class="name">${d.nome}</span>${p.seg ? '<span class="sub">Parcela Segura adicionada</span>' : ''}</span>
+        <span class="amount">${p.n}x de ${brl(d.val)}</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6.25231 2.95997C6.60564 2.58664 7.19929 2.56661 7.57262 2.91993L12.2465 7.31935C12.4331 7.49268 12.5394 7.74001 12.5394 8.00001C12.5394 8.25982 12.4329 8.50643 12.2465 8.6797L7.57262 13.0801C7.19928 13.4332 6.60557 13.4133 6.25231 13.0401C5.89914 12.6668 5.91925 12.0731 6.29235 11.7197L10.2465 8.00001L6.29235 4.27931C5.91958 3.92603 5.89946 3.33317 6.25231 2.95997Z" fill="#666666"/></svg>
+      </button>`;
+    }).join('');
+    const linhaSeguro = resumoSeguroRepescagem ? `
+      <label class="row summary-row summary-insurance-row">
+        <span><span class="name">Parcela Segura</span><span class="sub">Mantenha seu empréstimo protegido</span></span>
+        <span class="summary-insurance-check">
+          <input type="checkbox" aria-label="Parcela Segura" ${S.seguroEmprestimo ? 'checked' : ''} onchange="alterarSeguroResumo(this.checked)">
+          <i></i>
+        </span>
+      </label>` : '';
+    document.getElementById('box-recebimento').innerHTML = `
+      <div class="summary-section-title">VOCÊ VAI PAGAR</div>
+      <div class="summary-list">
+        ${linhasPagar}
+        ${linhaSeguro}
+      </div>
+      <a class="sim-footer-link summary-installments-link" href="#" onclick="abrirDetalhesParcelas();return false">
+        Confira os detalhes das parcelas ›
+      </a>`;
+    document.getElementById('resumo-parcela-inicial').textContent = brl(parcelaInicial);
+}
+
+function alterarSeguroResumo(checked) {
+    S.seguroEmprestimo=checked;
+    S.ct.seg=checked;
+    S.ep.seg=checked;
+    gerarResumoFinal();
+    mostrarSnack(checked ? 'Você adicionou o seguro do seu empréstimo' : 'Você removeu o seguro do seu empréstimo');
+}
+
+function setConta(tipo) {
+    contaDestino = tipo;
+    if(document.getElementById('btn-conta-vivo')) {
+       document.getElementById('btn-conta-vivo').className = 'chip btn-tab' + (tipo==='vivo'?' on':'');
+       document.getElementById('btn-conta-outra').className = 'chip btn-tab' + (tipo==='outra'?' on':'');
+       document.getElementById('box-conta-vivo').style.display = tipo==='vivo' ? 'block' : 'none';
+       document.getElementById('box-conta-outra').style.display = tipo==='outra' ? 'block' : 'none';
+    }
+}
+
+/* ===================== 8. senha ===================== */
+function pins(){
+  document.getElementById('dots').innerHTML=[0,1,2,3,4,5].map(i=>
+    `<div class="dot ${S.senha.length>i?'full':''}">${S.senha.length>i?'<span aria-hidden="true">•</span>':''}</div>`).join('');
+  document.getElementById('btn-senha').disabled = S.senha.length<6;
+}
+document.getElementById('kp').innerHTML =
+  [1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="tecla('${n}')">${n}</button>`).join('') +
+  `<button class="vaz"></button><button onclick="tecla('0')">0</button>
+   <button onclick="tecla('x')"><svg viewBox="0 0 24 24"><path d="M10 6h10v12H10L3 12z"/><path d="M14 10l4 4M18 10l-4 4"/></svg></button>`;
+function tecla(d){
+  if(d==='x') S.senha=S.senha.slice(0,-1);
+  else if(S.senha.length<6) S.senha+=d;
+  pins();
+}
+
+/* ===================== 9. sucesso ===================== */
+function sucesso(){
+  if(fluxoAberturaConta){
+    document.getElementById('ok-title').textContent = 'A abertura da sua Conta Vivo Pay está em andamento';
+    document.getElementById('ok-lista').innerHTML = `
+      <div class="row ok-l" style="border:0;line-height:1.5">
+        <span class="k">Recebemos seus documentos e sua selfie. Vamos validar seus dados e avisaremos quando sua conta estiver pronta.</span>
+      </div>`;
+    return;
+  }
+  const at=['ct','ep'].filter(k=>S[k].on);
+  const valorSolicitado = at.reduce((a,k)=>a+S[k].valor,0);
+  document.getElementById('ok-title').textContent = `Você solicitou um empréstimo de ${brl0(valorSolicitado)}`;
+  let h='';
+         
+  at.forEach(k=>{const d=D(k);
+    h+=`<div class="row ok-l"><span class="k">${d.nome}</span>
+        <span class="v">${brl0(S[k].valor)}</span></div>`;});
+        
+  let infoConta = 'Conta Vivo Pay';
+  if(S.temConta) {
+      infoConta = contaDestino === 'vivo' ? 'Conta Vivo Pay' : 'Outra instituição';
+  } else {
+      infoConta = 'Conta Vivo Pay';
+  }
+       
+  h+=`<div class="row ok-l receipt-row"><span class="k">Recebimento</span><span class="v">${infoConta}</span></div>`;
+      
+  document.getElementById('ok-lista').innerHTML=h;
+}
+
+/* ===================== init ===================== */
+document.getElementById('aster').innerHTML=[...Array(8)].map((_,i)=>
+  `<i style="transform:rotate(${i*45}deg) translateY(9px);opacity:${0.25+i*0.095}"></i>`).join('');
+(function(){
+  const cands=['Vivo Type','VivoType','Vivo Type Regular','Vivo','Telefonica Sans','Telefónica Sans','Telefonica','Figtree','Manrope'];
+  const achar=()=>{
+    for(const f of cands){ try{ if(document.fonts.check(`16px "${f}"`)) return f; }catch(e){} }
+    return 'fallback do sistema';
+  };
+  const pinta=()=>{
+    const f=achar(), el=document.getElementById('fonte-atual');
+    if(el) {
+      const oficial = f.toLowerCase().includes('vivo')||f.toLowerCase().includes('telefon');
+      el.textContent = f + (oficial?' ✓ oficial':' (substituta)');
+      el.style.color = oficial?'#8BE3A8':'#DCDCE2';
+    }
+  };
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(pinta); else setTimeout(pinta,600);
+})();
+
+document.getElementById('sw-conta').onchange=e=>{
+  S.temConta=e.target.checked;
+};
+
+document.getElementById('sw-dtp').onchange=e=>{
+  S.dtpOff=e.target.checked;
+  syncGlobal();
+  compor(true);
+};
+
+setV(getGlobalLimit()); 
+compor(true);
+
+const _h=parseInt(location.hash.replace('#',''),10);
+if(location.hash.includes('off')){S.dtpOff=true;document.getElementById('sw-dtp').checked=true;syncGlobal();compor(true);}
+if(_h===8){S.senha='8139';}
+ir(_h>=0&&_h<=12?_h:1);
+</script>
+</body>
+</html>
